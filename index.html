@@ -7,225 +7,236 @@
     
     <link rel="icon" type="image/png" href="https://img2.pic.in.th/asdzx.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        :root {
+            --primary-glow: rgba(255, 255, 255, 0.15);
+            --accent-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: default;
         }
 
         body {
-            background-color: #050505;
+            background-color: #000;
             color: #ffffff;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวา */
+            overflow: hidden; 
             position: relative;
-            padding: 20px 0;
         }
 
-        /* --- Overlay สำหรับกดเข้าเว็บ --- */
+        /* --- Overlay --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
-            z-index: 9999;
+            z-index: 10000;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: opacity 0.8s ease;
+            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
         }
-        #overlay.fade-out { opacity: 0; pointer-events: none; }
+        #overlay.fade-out { 
+            opacity: 0; 
+            visibility: hidden;
+            transform: scale(1.1);
+        }
         .enter-text {
             font-family: 'Orbitron', sans-serif;
-            letter-spacing: 5px;
-            animation: pulse 1.5s infinite;
+            letter-spacing: 8px;
+            animation: pulse 2s infinite;
             text-align: center;
-            padding: 0 20px;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
-        /* --- พื้นหลังรูปภาพ --- */
-        body::before {
-            content: "";
-            position: fixed; /* ใช้ fixed เพื่อให้ภาพนิ่งเวลาเลื่อน */
+        /* --- Background Effect --- */
+        .bg-wrapper {
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
             background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
-            filter: brightness(0.4);
+            filter: brightness(0.3) saturate(1.2);
+            transform: scale(1.05);
+            transition: transform 10s ease-out;
+        }
+        body.loaded .bg-wrapper { transform: scale(1); }
+
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
             z-index: -1;
         }
 
-        /* --- แถบบน (Top Navigation) --- */
+        /* --- Top Nav --- */
         .top-nav {
             position: fixed;
-            top: 15px;
+            top: 25px;
             width: 90%;
-            max-width: 600px; /* ลดความกว้างสูงสุดบน PC เพื่อความมินิมอล */
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 8px 15px;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            z-index: 1000;
+            animation: slideDown 1s ease forwards;
         }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         .nav-logo {
-            background: #fff;
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 0.65rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
             text-decoration: none;
-        }
-        .nav-logo img { width: 14px; height: 14px; }
-        .nav-text {
+            color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 700;
             letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.8);
         }
+        .nav-logo img { width: 18px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        .nav-text { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
 
-        .container { 
-            text-align: center; 
-            z-index: 1; 
-            width: 100%; 
-            padding: 0 20px;
-            margin-top: 60px; /* เผื่อที่ให้ top-nav */
-            margin-bottom: 100px; /* เผื่อที่ให้ music player */
+        /* --- Main Content --- */
+        .container {
+            text-align: center;
+            z-index: 10;
+            width: 100%;
+            padding: 0 30px;
+            margin-top: 40px;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.8rem, 10vw, 4rem); 
-            letter-spacing: clamp(4px, 2vw, 12px);
-            margin-bottom: 15px; 
-            text-transform: uppercase;
+            font-size: clamp(2rem, 8vw, 4.5rem);
             font-weight: 700;
-            background: linear-gradient(to right, #ffffff, #888, #ffffff);
-            background-size: 200% auto;
+            letter-spacing: 15px;
+            margin-bottom: 10px;
+            background: linear-gradient(180deg, #fff 0%, #777 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: floatText 4s ease-in-out infinite, shine 5s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+            animation: fadeIn 2s ease;
         }
 
         .subtext {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(0.5rem, 3vw, 0.7rem);
-            letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 40px;
+            font-size: 0.65rem;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 50px;
             text-transform: uppercase;
-            line-height: 1.6;
-        }
-
-        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes shine { to { background-position: 200% center; } }
-
-        .button-group { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 20px;
         }
 
         .btn {
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 320px; 
-            height: 80px; 
-            font-family: 'Orbitron', sans-serif;
-            color: #ffffff;
-            text-decoration: none; 
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px; 
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
+            max-width: 280px;
+            height: 75px;
+            text-decoration: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
-
-        .btn:active { transform: scale(0.95); }
-        .btn-text-main { font-size: 1rem; letter-spacing: 3px; font-weight: 700; }
-        .btn-text-sub {
-            font-size: 0.5rem;
-            letter-spacing: 2px;
-            margin-top: 4px;
-            color: rgba(255, 255, 255, 0.4);
+        .btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.1);
         }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
 
-        /* --- Music Player (ปรับปรุงให้รองรับมือถือ) --- */
+        .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; }
+        .btn-text-sub { font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 5px; }
+
+        /* --- Music Player --- */
         .music-player {
-            position: fixed; 
-            bottom: 25px; 
+            position: fixed;
+            bottom: 30px;
             left: 50%;
-            transform: translateX(-50%); /* จัดกลางหน้าจอ */
-            width: 90%;
-            max-width: 300px;
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            display: flex; 
+            transform: translateX(-50%);
+            width: 280px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
             align-items: center;
-            padding: 10px 15px;
-            z-index: 100;
+            z-index: 1000;
+            transition: all 0.5s ease;
         }
         .album-art {
-            width: 45px; height: 45px; border-radius: 50%;
-            overflow: hidden; border: 2px solid rgba(255,255,255,0.2);
+            width: 45px; height: 45px; border-radius: 12px;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            animation: rotateArt 12s linear infinite;
-            animation-play-state: paused;
+            transition: transform 0.5s ease;
         }
-        .playing .album-art { animation-play-state: running; }
-        @keyframes rotateArt { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .playing .album-art { animation: pulseArt 2s infinite ease-in-out; }
+        @keyframes pulseArt { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .album-art img { width: 100%; height: 100%; object-fit: cover; }
         
-        .player-controls-mini { flex-grow: 1; margin-left: 12px; overflow: hidden; }
+        .player-controls-mini { flex-grow: 1; margin-left: 15px; }
         .music-title-mini {
-            font-size: 0.55rem; font-weight: 400;
+            font-size: 0.55rem; color: rgba(255,255,255,0.8);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 5px;
+            width: 150px; margin-bottom: 6px; font-family: 'Inter', sans-serif;
         }
-        .ctrl-btns { display: flex; align-items: center; gap: 15px; }
-        .play-btn { background: none; border: none; color: white; font-size: 0.8rem; cursor: pointer; opacity: 0.8; }
+        .ctrl-btns { display: flex; align-items: center; gap: 18px; }
+        .play-btn { background: none; border: none; color: #fff; font-size: 0.8rem; cursor: pointer; opacity: 0.6; transition: 0.3s; }
+        .play-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 3px;
+            font-family: 'Orbitron', sans-serif;
+        }
 
         #youtube-player { display: none; }
 
-        footer {
-            position: relative; 
-            margin-top: 20px;
-            font-size: 0.55rem; 
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 2px; 
-            text-transform: uppercase;
-            padding-bottom: 120px; /* ดัน footer ขึ้นจาก player */
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* สำหรับมือถือขนาดเล็กมาก */
-        @media (max-width: 360px) {
-            h1 { font-size: 1.5rem; }
-            .btn { height: 70px; }
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            h1 { letter-spacing: 8px; }
+            .top-nav { width: 85%; }
         }
     </style>
 </head>
@@ -233,32 +244,36 @@
 
     <div id="overlay" onclick="startWebsite()">
         <div class="enter-text">
-            <i class="fas fa-fingerprint" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-            CLICK TO ENTER
+            <i class="fas fa-shield-halved" style="font-size: 1.5rem; margin-bottom: 20px; color: #fff; display: block;"></i>
+            INITIALIZING SYSTEM<br>
+            <span style="font-size: 0.5rem; opacity: 0.6; letter-spacing: 3px;">TAP TO ACCESS</span>
         </div>
     </div>
+
+    <div class="bg-wrapper"></div>
+    <div class="vignette"></div>
 
     <div class="top-nav">
         <a href="#" class="nav-logo">
             <img src="https://img2.pic.in.th/asdzx.png" alt="icon">
             DERNYOUNGSAY
         </a>
-        <div class="nav-text">MEMBER 2K26</div>
+        <div class="nav-text">V.2026.1</div>
     </div>
 
     <div class="container">
         <h1>DERNYOUNGSAY</h1> 
-        <div class="subtext">MEMBER DERNYOUNGSAY ORIGINAL</div>
+        <div class="subtext">The Original Legacy Member</div>
 
         <div class="button-group">
             <a href="https://dernyoungsay.github.io/gg/" class="btn">
-                <span class="btn-text-main">ENTER MEMBER</span>
-                <span class="btn-text-sub">ACCESS GRANTED</span>
+                <span class="btn-text-main">ENTER PORTAL</span>
+                <span class="btn-text-sub">ENCRYPTED CONNECTION</span>
             </a>
         </div>
 
         <footer>
-            © 2026 DERNYOUNGSAY
+            &copy; 2026 ALL RIGHTS RESERVED
         </footer>
     </div>
 
@@ -267,11 +282,11 @@
             <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
         </div>
         <div class="player-controls-mini">
-            <div class="music-title-mini" id="music-title">Loading...</div>
+            <div class="music-title-mini" id="music-title">Awaiting Data...</div>
             <div class="ctrl-btns">
-                <i class="fas fa-backward play-btn"></i>
+                <i class="fas fa-step-backward play-btn"></i>
                 <button class="play-btn" id="master-play"><i class="fas fa-play" id="play-icon"></i></button>
-                <i class="fas fa-forward play-btn"></i>
+                <i class="fas fa-step-forward play-btn"></i>
             </div>
         </div>
     </div>
@@ -279,6 +294,7 @@
     <div id="youtube-player"></div>
 
     <script>
+        // YouTube API Load
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -297,7 +313,7 @@
                     'playlist': videoId,
                     'controls': 0,
                     'mute': 0,
-                    'playsinline': 1 // สำคัญมากเพื่อให้เล่นบนมือถือได้โดยไม่เด้งเต็มจอ
+                    'playsinline': 1 
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -307,11 +323,14 @@
         }
 
         function startWebsite() {
-            document.getElementById('overlay').classList.add('fade-out');
+            document.body.classList.add('loaded');
+            const overlay = document.getElementById('overlay');
+            overlay.classList.add('fade-out');
+            
             if (player) {
                 player.playVideo();
                 player.unMute();
-                player.setVolume(100);
+                player.setVolume(80);
             }
         }
 
@@ -320,7 +339,7 @@
                 var title = player.getVideoData().title;
                 document.getElementById('music-title').innerText = title || "Now Playing";
             } catch(e) {
-                document.getElementById('music-title').innerText = "Music Playing";
+                document.getElementById('music-title').innerText = "System Audio Active";
             }
         }
 
@@ -343,6 +362,9 @@
                 player.playVideo();
             }
         });
+
+        // ป้องกันการคลิกขวา (Optional - เพื่อความเท่แบบ UI System)
+        document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
 </html>
