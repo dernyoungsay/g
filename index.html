@@ -23,291 +23,165 @@
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: default; }
 
         body {
-            background-color: #000;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
-            position: relative;
+            background-color: #000; color: #ffffff; font-family: 'Inter', sans-serif;
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            overflow: hidden; position: relative;
         }
 
-        /* --- Overlay (หน้าเข้าเว็บ) --- */
-        #overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: opacity 1.2s cubic-bezier(0.7, 0, 0.3, 1), visibility 1.2s;
-        }
-        
-        #overlay.fade-out { opacity: 0; visibility: hidden; }
-
-        .enter-text-wrapper { text-align: center; font-family: 'Orbitron', sans-serif; text-transform: uppercase; }
-        .fingerprint-icon {
-            font-size: 4rem; color: #ffffff; margin-bottom: 25px;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
-            animation: pulse-glow 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)); }
-            100% { transform: scale(1); opacity: 0.6; }
-        }
-
-        .main-enter-text { font-size: 1.2rem; letter-spacing: 12px; color: #ffffff; margin-bottom: 10px; font-weight: 400; }
-        .sub-enter-text { font-size: 0.6rem; letter-spacing: 5px; color: rgba(255, 255, 255, 0.5); font-weight: 300; }
-
-        /* --- Ad Modal (โฆษณาตามรูป) --- */
+        /* --- Ad Modal (Popup โฆษณา) --- */
         #ad-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 11000;
-            display: none; /* เริ่มต้นปิดไว้ */
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 11000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
         }
-
-        .ad-container {
-            width: 90%;
-            max-width: 450px;
-            background: #111;
-            border: 2px solid #333;
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,1);
+        .ad-box {
+            width: 90%; max-width: 450px; background: #111; border-radius: 20px;
+            padding: 25px; position: relative; border: 1px solid #333; text-align: center;
         }
-
         .ad-close {
-            position: absolute;
-            top: 15px; right: 15px;
-            color: #fff; font-size: 20px; cursor: pointer;
-            opacity: 0.7; transition: 0.3s;
+            position: absolute; top: 15px; right: 20px; color: #fff;
+            font-size: 24px; cursor: pointer; opacity: 0.5; transition: 0.3s;
         }
         .ad-close:hover { opacity: 1; }
-
-        .ad-image-frame {
-            border: 2px solid red; /* ขอบแดงตามรูป */
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
+        .ad-img-frame {
+            border: 2px solid #ff0000; border-radius: 12px; overflow: hidden; margin-bottom: 20px;
         }
-        .ad-image-frame img { width: 100%; display: block; }
+        .ad-img-frame img { width: 100%; display: block; }
+        .ad-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; margin-bottom: 12px; }
+        .ad-text { font-size: 0.85rem; color: #aaa; line-height: 1.6; margin-bottom: 25px; }
+        .ad-link-btn {
+            display: block; width: 100%; padding: 15px; border: 1px solid #444;
+            border-radius: 12px; color: #fff; text-decoration: none;
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; background: rgba(255,255,255,0.05);
+        }
 
-        .ad-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; margin-bottom: 10px; color: #fff; }
-        .ad-desc { font-size: 0.85rem; color: #aaa; line-height: 1.6; margin-bottom: 20px; }
+        /* --- UI เดิมของคุณ --- */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; cursor: pointer;
+            transition: opacity 1.2s cubic-bezier(0.7, 0, 0.3, 1), visibility 1.2s;
+        }
+        #overlay.fade-out { opacity: 0; visibility: hidden; }
+        .fingerprint-icon { font-size: 4rem; margin-bottom: 25px; animation: pulse-glow 2s infinite ease-in-out; }
+        @keyframes pulse-glow { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.08); opacity: 1; } }
         
-        .ad-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #444;
-            border-radius: 10px;
-            color: #fff;
-            text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.05);
-        }
-        .ad-btn:hover { background: rgba(255,255,255,0.1); border-color: #666; }
-
-        /* --- ส่วนอื่นๆ ของเว็บ --- */
-        .bg-wrapper {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
-            filter: brightness(0.3) saturate(1.2);
-            transform: scale(1.05);
-            transition: transform 8s ease-out;
-        }
-        body.loaded .bg-wrapper { transform: scale(1); }
-        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%); z-index: -1; }
-
-        .top-nav {
-            position: fixed; top: 25px; width: 90%; max-width: 500px;
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 100px; padding: 10px 20px;
-            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
-            opacity: 0; transform: translateY(-20px); transition: all 1s ease 0.5s;
-        }
+        .bg-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat; filter: brightness(0.3); }
+        .top-nav { position: fixed; top: 25px; width: 90%; max-width: 500px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; opacity: 0; transform: translateY(-20px); transition: 1s 0.5s; }
         body.loaded .top-nav { opacity: 1; transform: translateY(0); }
-
-        .container { text-align: center; z-index: 10; width: 100%; padding: 0 30px; opacity: 0; transform: translateY(20px); transition: all 1s ease 0.8s; }
+        .container { text-align: center; z-index: 10; width: 100%; padding: 0 30px; opacity: 0; transform: translateY(20px); transition: 1s 0.8s; }
         body.loaded .container { opacity: 1; transform: translateY(0); }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 8vw, 4.5rem);
-            font-weight: 700; letter-spacing: 15px; margin-bottom: 10px;
-            background: linear-gradient(180deg, #fff 0%, #777 100%);
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
-        .btn {
-            position: relative; display: inline-flex; flex-direction: column; justify-content: center; align-items: center;
-            width: 100%; max-width: 280px; height: 75px; text-decoration: none;
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px;
-            transition: all 0.4s; backdrop-filter: blur(10px);
-        }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 8vw, 4.5rem); letter-spacing: 15px; background: linear-gradient(180deg, #fff 0%, #777 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn { position: relative; display: inline-flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; max-width: 280px; height: 75px; text-decoration: none; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; transition: 0.4s; backdrop-filter: blur(10px); }
         .btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-5px); }
-
-        /* Music Player ... (ส่วนเดิมของคุณ) */
-        .music-player { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 280px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; display: flex; align-items: center; z-index: 1000; opacity: 0; transition: 1s; }
+        .music-player { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 280px; background: rgba(0,0,0,0.6); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; display: flex; align-items: center; z-index: 1000; opacity: 0; transition: 1s 1s; }
         body.loaded .music-player { opacity: 1; }
-        .album-art { width: 45px; height: 45px; border-radius: 12px; overflow: hidden; }
-        .play-btn { background: none; border: none; color: #fff; cursor: pointer; }
         #youtube-player { display: none; }
     </style>
 </head>
 <body>
 
     <div id="ad-modal">
-        <div class="ad-container">
+        <div class="ad-box">
             <i class="fa-solid fa-xmark ad-close" onclick="closeAd()"></i>
-            <div class="ad-image-frame">
-                <img id="ad-img" src="" alt="Ad">
+            <div class="ad-img-frame">
+                <img id="ad-image" src="" alt="Ad">
             </div>
             <h2 class="ad-title" id="ad-title">Loading...</h2>
-            <p class="ad-desc" id="ad-desc">Please wait...</p>
-            <a href="#" class="ad-btn" id="ad-link" target="_blank">ดูโพสต์ต้นฉบับ</a>
+            <p class="ad-text" id="ad-description"></p>
+            <a href="#" id="ad-button-url" class="ad-link-btn" target="_blank">ดูโพสต์ต้นฉบับ</a>
         </div>
     </div>
 
     <div id="overlay" onclick="startWebsite()">
         <div class="enter-text-wrapper">
             <i class="fa-solid fa-fingerprint fingerprint-icon"></i>
-            <div class="main-enter-text">CLICK TO ENTER</div>
-            <div class="sub-enter-text">SYSTEM DERNYOUNGSAY</div>
+            <div style="letter-spacing:12px; font-size:1.2rem; font-family:'Orbitron';">CLICK TO ENTER</div>
         </div>
     </div>
 
     <div class="bg-wrapper"></div>
-    <div class="vignette"></div>
-
     <div class="top-nav">
-        <a href="#" class="nav-logo">
-            <img src="https://img2.pic.in.th/asdzx.png" alt="icon"> DERNYOUNGSAY
-        </a>
-        <div class="nav-text">V.2026.1</div>
+        <div class="nav-logo"><img src="https://img2.pic.in.th/asdzx.png" width="18"> DERNYOUNGSAY</div>
+        <div style="font-size:0.6rem; color:rgba(255,255,255,0.5);">V.2026.1</div>
     </div>
 
     <div class="container">
         <h1>DERNYOUNGSAY</h1> 
-        <p style="letter-spacing: 5px; color:rgba(255,255,255,0.4); margin-bottom:30px;">THE ORIGINAL LEGACY MEMBER</p>
-        <div class="button-group">
-            <a href="https://dernyoungsay.github.io/gg/" class="btn">
-                <span style="font-family:'Orbitron'; font-weight:700;">MEMBER ENTER</span>
-                <span style="font-size:0.5rem; color:rgba(255,255,255,0.3);">MEMBER 2K26</span>
-            </a>
-        </div>
-        <footer style="margin-top:40px; font-size:0.5rem; color:rgba(255,255,255,0.2); letter-spacing:3px;">&copy; 2K26 SYSTEM BY DERNYOUNGSAY</footer>
+        <div style="letter-spacing:5px; font-size:0.65rem; color:rgba(255,255,255,0.4); margin-bottom:50px;">THE ORIGINAL LEGACY MEMBER</div>
+        <a href="https://dernyoungsay.github.io/gg/" class="btn">
+            <span style="font-family:'Orbitron'; font-weight:700;">MEMBER ENTER</span>
+            <span style="font-size:0.5rem; color:rgba(255,255,255,0.3);">MEMBER 2K26</span>
+        </a>
     </div>
 
     <div class="music-player" id="player-container">
-        <div class="album-art"><img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" id="music-cover"></div>
-        <div style="margin-left:15px;">
-            <div id="music-title" style="font-size:0.55rem; margin-bottom:5px;">Awaiting Data...</div>
-            <button class="play-btn" id="master-play"><i class="fas fa-play" id="play-icon"></i></button>
+        <div style="width:45px; height:45px; border-radius:12px; overflow:hidden;">
+            <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" width="100%" height="100%" style="object-fit:cover;">
+        </div>
+        <div style="margin-left:15px; flex-grow:1;">
+            <div id="music-title" style="font-size:0.55rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:150px;">Loading...</div>
+            <button id="master-play" style="background:none; border:none; color:#fff; cursor:pointer;"><i class="fas fa-play" id="play-icon"></i></button>
         </div>
     </div>
 
     <div id="youtube-player"></div>
 
     <script>
-        // --- CONFIG FIREBASE ---
-        const firebaseConfig = {
-            databaseURL: "https://dysx-f978c-default-rtdb.asia-southeast1.firebasedatabase.app/"
-        };
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = { databaseURL: "https://dysx-f978c-default-rtdb.asia-southeast1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- ระบบดึงข้อมูลโฆษณา ---
-        function loadAdSettings() {
-            db.ref('ad_settings').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('ad-img').src = data.image_url;
-                    document.getElementById('ad-title').innerText = data.title;
-                    document.getElementById('ad-desc').innerText = data.description;
-                    document.getElementById('ad-link').href = data.button_url;
-                    document.getElementById('ad-link').innerText = data.button_text;
-                    
-                    // เก็บค่าสถานะไว้เช็คตอนกดเข้าเว็บ
-                    window.adEnabled = data.enabled;
-                }
-            });
-        }
-        loadAdSettings();
+        let adEnabled = false;
 
-        function closeAd() {
-            document.getElementById('ad-modal').style.display = 'none';
-        }
+        // ดึงข้อมูลโฆษณาแบบ Realtime
+        db.ref('ads').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                adEnabled = data.enabled;
+                document.getElementById('ad-image').src = data.image;
+                document.getElementById('ad-title').innerText = data.title;
+                document.getElementById('ad-description').innerText = data.description;
+                document.getElementById('ad-button-url').href = data.link;
+            }
+        });
 
-        // --- ระบบเข้าเว็บ ---
+        function closeAd() { document.getElementById('ad-modal').style.display = 'none'; }
+
         function startWebsite() {
             document.body.classList.add('loaded');
             document.getElementById('overlay').classList.add('fade-out');
             
-            // ถ้า Admin เปิดโฆษณาไว้ ให้แสดง Popup หลังจากเข้าเว็บ
-            if (window.adEnabled) {
+            // แสดงโฆษณาถ้า Admin เปิดไว้
+            if (adEnabled) {
                 setTimeout(() => {
                     document.getElementById('ad-modal').style.display = 'flex';
-                }, 500);
+                }, 800);
             }
 
-            if (player) {
-                player.playVideo();
-                player.unMute();
-                player.setVolume(80);
-            }
+            if (player) { player.playVideo(); player.unMute(); }
         }
 
-        // --- YOUTUBE API (ส่วนเดิม) ---
+        // --- YouTube API เดิม ---
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
         var player;
-        var videoId = 'Ovo1y7Pllt8'; 
-
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
-                height: '0', width: '0', videoId: videoId,
-                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': videoId, 'controls': 0 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                height: '0', width: '0', videoId: 'Ovo1y7Pllt8',
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'Ovo1y7Pllt8' },
+                events: { 'onReady': (e) => { document.getElementById('music-title').innerText = player.getVideoData().title; },
+                          'onStateChange': (e) => { document.getElementById('play-icon').className = (e.data == 1) ? 'fas fa-pause' : 'fas fa-play'; } }
             });
         }
-
-        function onPlayerReady(event) {
-            try { document.getElementById('music-title').innerText = player.getVideoData().title; } 
-            catch(e) { document.getElementById('music-title').innerText = "System Audio Active"; }
-        }
-
-        function onPlayerStateChange(event) {
-            const icon = document.getElementById('play-icon');
-            icon.className = (event.data == YT.PlayerState.PLAYING) ? 'fas fa-pause' : 'fas fa-play';
-        }
-
-        document.getElementById('master-play').addEventListener('click', function() {
-            if (player.getPlayerState() == YT.PlayerState.PLAYING) player.pauseVideo();
-            else player.playVideo();
+        document.getElementById('master-play').addEventListener('click', () => {
+            (player.getPlayerState() == 1) ? player.pauseVideo() : player.playVideo();
         });
-
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
