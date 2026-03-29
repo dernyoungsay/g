@@ -21,12 +21,13 @@
             background-color: #050505;
             color: #ffffff;
             font-family: 'Inter', sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวา */
             position: relative;
+            padding: 20px 0;
         }
 
         /* --- Overlay สำหรับกดเข้าเว็บ --- */
@@ -46,56 +47,56 @@
             font-family: 'Orbitron', sans-serif;
             letter-spacing: 5px;
             animation: pulse 1.5s infinite;
+            text-align: center;
+            padding: 0 20px;
         }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        /* --- พื้นหลังรูปภาพเดียว --- */
+        /* --- พื้นหลังรูปภาพ --- */
         body::before {
             content: "";
-            position: absolute;
+            position: fixed; /* ใช้ fixed เพื่อให้ภาพนิ่งเวลาเลื่อน */
             top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
-            filter: brightness(0.5);
-            z-index: 0;
+            filter: brightness(0.4);
+            z-index: -1;
         }
 
         /* --- แถบบน (Top Navigation) --- */
         .top-nav {
             position: fixed;
-            top: 20px;
+            top: 15px;
             width: 90%;
-            max-width: 1200px;
+            max-width: 600px; /* ลดความกว้างสูงสุดบน PC เพื่อความมินิมอล */
             background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50px;
-            padding: 10px 20px;
+            padding: 8px 15px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
             z-index: 100;
         }
         .nav-logo {
             background: #fff;
             color: #000;
-            padding: 5px 15px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-size: 0.7rem;
-            margin-right: 15px;
+            font-size: 0.65rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             text-decoration: none;
         }
-        .nav-logo img {
-            width: 18px;
-            height: 18px;
-        }
+        .nav-logo img { width: 14px; height: 14px; }
         .nav-text {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
             color: rgba(255, 255, 255, 0.8);
         }
 
@@ -103,48 +104,44 @@
             text-align: center; 
             z-index: 1; 
             width: 100%; 
-            max-width: 900px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 0 20px;
+            margin-top: 60px; /* เผื่อที่ให้ top-nav */
+            margin-bottom: 100px; /* เผื่อที่ให้ music player */
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 9vw, 4.5rem); 
-            letter-spacing: clamp(5px, 2vw, 15px);
-            margin-bottom: 10px; 
+            font-size: clamp(1.8rem, 10vw, 4rem); 
+            letter-spacing: clamp(4px, 2vw, 12px);
+            margin-bottom: 15px; 
             text-transform: uppercase;
             font-weight: 700;
-            background: linear-gradient(to right, #ffffff 0%, #cccccc 25%, #ffffff 50%, #cccccc 75%, #ffffff 100%);
+            background: linear-gradient(to right, #ffffff, #888, #ffffff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
-            animation: floatText 4s ease-in-out infinite, shine 8s linear infinite;
-            white-space: nowrap; 
+            animation: floatText 4s ease-in-out infinite, shine 5s linear infinite;
         }
 
         .subtext {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 5px;
+            font-size: clamp(0.5rem, 3vw, 0.7rem);
+            letter-spacing: 3px;
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             text-transform: uppercase;
+            line-height: 1.6;
         }
 
-        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         @keyframes shine { to { background-position: 200% center; } }
 
         .button-group { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            width: 100%;
-            gap: 15px;
+            gap: 20px;
         }
 
         .btn {
@@ -152,81 +149,93 @@
             flex-direction: column; 
             justify-content: center; 
             align-items: center;
-            width: 350px; height: 90px; 
+            width: 100%;
+            max-width: 320px; 
+            height: 80px; 
             font-family: 'Orbitron', sans-serif;
             color: #ffffff;
             text-decoration: none; 
-            text-transform: uppercase;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(8px);
+            border-radius: 15px; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
-        .btn-text-main { font-size: 1.1rem; letter-spacing: 4px; font-weight: 700; }
+        .btn:active { transform: scale(0.95); }
+        .btn-text-main { font-size: 1rem; letter-spacing: 3px; font-weight: 700; }
         .btn-text-sub {
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             letter-spacing: 2px;
-            margin-top: 5px;
-            color: rgba(255, 255, 255, 0.3);
-        }
-        .btn:hover { 
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.5); 
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            margin-top: 4px;
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        /* --- Music Player --- */
+        /* --- Music Player (ปรับปรุงให้รองรับมือถือ) --- */
         .music-player {
-            position: fixed; bottom: 40px; left: 40px;
-            background: rgba(20, 20, 20, 0.8);
+            position: fixed; 
+            bottom: 25px; 
+            left: 50%;
+            transform: translateX(-50%); /* จัดกลางหน้าจอ */
+            width: 90%;
+            max-width: 300px;
+            background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex; align-items: center;
-            padding: 12px 20px;
+            border-radius: 25px;
+            display: flex; 
+            align-items: center;
+            padding: 10px 15px;
             z-index: 100;
         }
         .album-art {
-            width: 50px; height: 50px; border-radius: 50%;
-            overflow: hidden; border: 2px solid rgba(255,255,255,0.1);
+            width: 45px; height: 45px; border-radius: 50%;
+            overflow: hidden; border: 2px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
             animation: rotateArt 12s linear infinite;
             animation-play-state: paused;
         }
         .playing .album-art { animation-play-state: running; }
         @keyframes rotateArt { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .album-art img { width: 100%; height: 100%; object-fit: cover; }
-        .player-controls-mini { display: flex; flex-direction: column; margin-left: 15px; gap: 8px; }
+        
+        .player-controls-mini { flex-grow: 1; margin-left: 12px; overflow: hidden; }
         .music-title-mini {
-            font-size: 0.65rem; font-weight: 400; max-width: 120px;
+            font-size: 0.55rem; font-weight: 400;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 5px;
         }
-        .ctrl-btns { display: flex; align-items: center; gap: 12px; }
-        .play-btn { background: none; border: none; color: white; font-size: 0.9rem; cursor: pointer; opacity: 0.7; }
+        .ctrl-btns { display: flex; align-items: center; gap: 15px; }
+        .play-btn { background: none; border: none; color: white; font-size: 0.8rem; cursor: pointer; opacity: 0.8; }
 
         #youtube-player { display: none; }
 
         footer {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            font-size: 0.65rem; color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 2px; text-transform: uppercase;
-            z-index: 10;
+            position: relative; 
+            margin-top: 20px;
+            font-size: 0.55rem; 
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            padding-bottom: 120px; /* ดัน footer ขึ้นจาก player */
         }
 
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; letter-spacing: 6px; }
-            .btn { width: 300px; height: 80px; }
-            .top-nav { width: 95%; top: 10px; }
+        /* สำหรับมือถือขนาดเล็กมาก */
+        @media (max-width: 360px) {
+            h1 { font-size: 1.5rem; }
+            .btn { height: 70px; }
         }
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="startWebsite()">
-        <div class="enter-text">CLICK TO ENTER</div>
+        <div class="enter-text">
+            <i class="fas fa-fingerprint" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            CLICK TO ENTER
+        </div>
     </div>
 
     <div class="top-nav">
@@ -239,14 +248,18 @@
 
     <div class="container">
         <h1>DERNYOUNGSAY</h1> 
-        <div class="subtext">MEMBER DERNYOUNGSAY ORIGNAL</div>
+        <div class="subtext">MEMBER DERNYOUNGSAY ORIGINAL</div>
 
         <div class="button-group">
             <a href="https://dernyoungsay.github.io/gg/" class="btn">
-                <span class="btn-text-main">DERNYOUNGSAY</span>
-                <span class="btn-text-sub">MEMBER</span>
+                <span class="btn-text-main">ENTER MEMBER</span>
+                <span class="btn-text-sub">ACCESS GRANTED</span>
             </a>
         </div>
+
+        <footer>
+            © 2026 DERNYOUNGSAY
+        </footer>
     </div>
 
     <div class="music-player" id="player-container">
@@ -264,10 +277,6 @@
     </div>
 
     <div id="youtube-player"></div>
-
-    <footer>
-        © 2026 DERNYOUNGSAY
-    </footer>
 
     <script>
         var tag = document.createElement('script');
@@ -287,7 +296,8 @@
                     'loop': 1, 
                     'playlist': videoId,
                     'controls': 0,
-                    'mute': 0
+                    'mute': 0,
+                    'playsinline': 1 // สำคัญมากเพื่อให้เล่นบนมือถือได้โดยไม่เด้งเต็มจอ
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -306,8 +316,12 @@
         }
 
         function onPlayerReady(event) {
-            var title = player.getVideoData().title;
-            document.getElementById('music-title').innerText = title;
+            try {
+                var title = player.getVideoData().title;
+                document.getElementById('music-title').innerText = title || "Now Playing";
+            } catch(e) {
+                document.getElementById('music-title').innerText = "Music Playing";
+            }
         }
 
         function onPlayerStateChange(event) {
