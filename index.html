@@ -37,7 +37,7 @@
             position: relative;
         }
 
-        /* --- Overlay --- */
+        /* --- Overlay (ปรับตามรูปภาพที่คุณส่งมา) --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -48,20 +48,34 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            transition: opacity 1.2s cubic-bezier(0.7, 0, 0.3, 1), visibility 1.2s;
         }
+        
         #overlay.fade-out { 
             opacity: 0; 
             visibility: hidden;
-            transform: scale(1.1);
         }
-        .enter-text {
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 8px;
-            animation: pulse 2s infinite;
+
+        .enter-text-wrapper {
             text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
+
+        .main-enter-text {
+            font-size: 1.2rem;
+            letter-spacing: 12px; /* ตัวหนังสือห่างแบบในรูป */
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .sub-enter-text {
+            font-size: 0.5rem;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+        }
 
         /* --- Background Effect --- */
         .bg-wrapper {
@@ -71,7 +85,7 @@
             background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
             filter: brightness(0.3) saturate(1.2);
             transform: scale(1.05);
-            transition: transform 10s ease-out;
+            transition: transform 8s ease-out;
         }
         body.loaded .bg-wrapper { transform: scale(1); }
 
@@ -98,9 +112,11 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            animation: slideDown 1s ease forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 1s ease 0.5s;
         }
-        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        body.loaded .top-nav { opacity: 1; transform: translateY(0); }
 
         .nav-logo {
             display: flex;
@@ -122,8 +138,11 @@
             z-index: 10;
             width: 100%;
             padding: 0 30px;
-            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease 0.8s;
         }
+        body.loaded .container { opacity: 1; transform: translateY(0); }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
@@ -136,7 +155,6 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
-            animation: fadeIn 2s ease;
         }
 
         .subtext {
@@ -171,14 +189,6 @@
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.1);
         }
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: 0.5s;
-        }
-        .btn:hover::before { left: 100%; }
 
         .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; }
         .btn-text-sub { font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 5px; }
@@ -199,13 +209,15 @@
             display: flex;
             align-items: center;
             z-index: 1000;
-            transition: all 0.5s ease;
+            opacity: 0;
+            transition: all 1s ease 1s;
         }
+        body.loaded .music-player { opacity: 1; }
+
         .album-art {
             width: 45px; height: 45px; border-radius: 12px;
             overflow: hidden; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            transition: transform 0.5s ease;
         }
         .playing .album-art { animation: pulseArt 2s infinite ease-in-out; }
         @keyframes pulseArt { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -215,7 +227,7 @@
         .music-title-mini {
             font-size: 0.55rem; color: rgba(255,255,255,0.8);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            width: 150px; margin-bottom: 6px; font-family: 'Inter', sans-serif;
+            width: 150px; margin-bottom: 6px;
         }
         .ctrl-btns { display: flex; align-items: center; gap: 18px; }
         .play-btn { background: none; border: none; color: #fff; font-size: 0.8rem; cursor: pointer; opacity: 0.6; transition: 0.3s; }
@@ -231,22 +243,20 @@
 
         #youtube-player { display: none; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         /* Mobile Adjustments */
         @media (max-width: 480px) {
             h1 { letter-spacing: 8px; }
             .top-nav { width: 85%; }
+            .main-enter-text { font-size: 1rem; letter-spacing: 8px; }
         }
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="startWebsite()">
-        <div class="enter-text">
-            <i class="fas fa-shield-halved" style="font-size: 1.5rem; margin-bottom: 20px; color: #fff; display: block;"></i>
-            INITIALIZING SYSTEM<br>
-            <span style="font-size: 0.5rem; opacity: 0.6; letter-spacing: 3px;">TAP TO ACCESS</span>
+        <div class="enter-text-wrapper">
+            <div class="main-enter-text">INITIALIZING SYSTEM</div>
+            <div class="sub-enter-text">TAP TO ACCESS</div>
         </div>
     </div>
 
@@ -294,7 +304,6 @@
     <div id="youtube-player"></div>
 
     <script>
-        // YouTube API Load
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -363,7 +372,6 @@
             }
         });
 
-        // ป้องกันการคลิกขวา (Optional - เพื่อความเท่แบบ UI System)
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
