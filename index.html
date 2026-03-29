@@ -6,307 +6,343 @@
     <title>DERNYOUNGSAY</title>
     
     <link rel="icon" type="image/png" href="https://img2.pic.in.th/asdzx.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&family=Kanit:wght@300;400&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
-        :root {
-            --accent: #ffffff;
-            --glass: rgba(0, 0, 0, 0.8);
-            --border: rgba(255, 255, 255, 0.1);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
 
         body {
             background-color: #050505;
-            color: #fff;
-            overflow-x: hidden;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวา */
+            position: relative;
+            padding: 20px 0;
         }
 
-        /* Smooth Background Layer */
-        #bg-main {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.4);
-            z-index: -1;
-            transition: background 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Entry Overlay */
+        /* --- Overlay สำหรับกดเข้าเว็บ --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
-            z-index: 10000;
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s;
+            transition: opacity 0.8s ease;
         }
-        #overlay.hide { opacity: 0; visibility: hidden; }
+        #overlay.fade-out { opacity: 0; pointer-events: none; }
+        .enter-text {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 5px;
+            animation: pulse 1.5s infinite;
+            text-align: center;
+            padding: 0 20px;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        /* Ad Card (เหมือนในรูปตัวอย่าง) */
-        #ad-container {
-            position: fixed;
+        /* --- พื้นหลังรูปภาพ --- */
+        body::before {
+            content: "";
+            position: fixed; /* ใช้ fixed เพื่อให้ภาพนิ่งเวลาเลื่อน */
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
-            z-index: 9000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
+            filter: brightness(0.4);
+            z-index: -1;
         }
-        .ad-card {
-            background: #111;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            position: relative;
-            transform: scale(0.9);
-            opacity: 0;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .ad-card.show { transform: scale(1); opacity: 1; }
-        .ad-img-box { width: 100%; height: 210px; overflow: hidden; border-bottom: 2px solid #333; }
-        .ad-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .ad-body { padding: 25px; text-align: center; }
-        .ad-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 10px; font-family: 'Orbitron'; }
-        .ad-desc { font-size: 0.9rem; color: #888; margin-bottom: 20px; line-height: 1.5; }
-        .ad-btn {
-            display: block; width: 100%; padding: 12px;
-            background: #fff; color: #000; border-radius: 12px;
-            text-decoration: none; font-weight: bold; transition: 0.3s;
-        }
-        .ad-btn:hover { background: #ccc; transform: translateY(-2px); }
-        .close-ad { position: absolute; top: 15px; right: 15px; color: #fff; cursor: pointer; z-index: 10; font-size: 1.2rem; }
 
-        /* Music Player UI */
-        .music-player {
-            position: fixed; bottom: 25px;
-            width: 290px; padding: 10px;
-            background: var(--glass);
+        /* --- แถบบน (Top Navigation) --- */
+        .top-nav {
+            position: fixed;
+            top: 15px;
+            width: 90%;
+            max-width: 600px; /* ลดความกว้างสูงสุดบน PC เพื่อความมินิมอล */
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            display: flex; align-items: center;
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             z-index: 100;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .pos-left { left: 25px; }
-        .pos-right { right: 25px; }
+        .nav-logo {
+            background: #fff;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .nav-logo img { width: 14px; height: 14px; }
+        .nav-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .container { 
+            text-align: center; 
+            z-index: 1; 
+            width: 100%; 
+            padding: 0 20px;
+            margin-top: 60px; /* เผื่อที่ให้ top-nav */
+            margin-bottom: 100px; /* เผื่อที่ให้ music player */
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 10vw, 4rem); 
+            letter-spacing: clamp(4px, 2vw, 12px);
+            margin-bottom: 15px; 
+            text-transform: uppercase;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #888, #ffffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: floatText 4s ease-in-out infinite, shine 5s linear infinite;
+        }
+
+        .subtext {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(0.5rem, 3vw, 0.7rem);
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            line-height: 1.6;
+        }
+
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .button-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 20px;
+        }
+
+        .btn {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            width: 100%;
+            max-width: 320px; 
+            height: 80px; 
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
+            text-decoration: none; 
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn-text-main { font-size: 1rem; letter-spacing: 3px; font-weight: 700; }
+        .btn-text-sub {
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* --- Music Player (ปรับปรุงให้รองรับมือถือ) --- */
+        .music-player {
+            position: fixed; 
+            bottom: 25px; 
+            left: 50%;
+            transform: translateX(-50%); /* จัดกลางหน้าจอ */
+            width: 90%;
+            max-width: 300px;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            display: flex; 
+            align-items: center;
+            padding: 10px 15px;
+            z-index: 100;
+        }
+        .album-art {
+            width: 45px; height: 45px; border-radius: 50%;
+            overflow: hidden; border: 2px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+            animation: rotateArt 12s linear infinite;
+            animation-play-state: paused;
+        }
+        .playing .album-art { animation-play-state: running; }
+        @keyframes rotateArt { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .album-art img { width: 100%; height: 100%; object-fit: cover; }
         
-        .mu-cover { width: 48px; height: 48px; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
-        .mu-cover img { width: 100%; height: 100%; object-fit: cover; }
-        .mu-info { margin-left: 12px; flex-grow: 1; overflow: hidden; }
-        .mu-title { font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
-        .mu-status { font-size: 0.6rem; color: #666; letter-spacing: 1px; }
-        .mu-control { margin-left: 10px; cursor: pointer; color: #fff; opacity: 0.8; }
+        .player-controls-mini { flex-grow: 1; margin-left: 12px; overflow: hidden; }
+        .music-title-mini {
+            font-size: 0.55rem; font-weight: 400;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 5px;
+        }
+        .ctrl-btns { display: flex; align-items: center; gap: 15px; }
+        .play-btn { background: none; border: none; color: white; font-size: 0.8rem; cursor: pointer; opacity: 0.8; }
 
-        /* Admin Trigger */
-        #admin-trigger { position: fixed; top: 15px; right: 15px; opacity: 0.2; cursor: pointer; font-size: 0.7rem; z-index: 999; }
+        #youtube-player { display: none; }
 
-        /* SweetAlert Custom UI */
-        .swal2-popup { background: #111 !important; color: #fff !important; border-radius: 20px !important; border: 1px solid #333 !important; }
-        .swal2-input { background: #1a1a1a !important; color: #fff !important; border: 1px solid #333 !important; border-radius: 10px !important; }
-        .swal2-confirm { background: #fff !important; color: #000 !important; border-radius: 10px !important; font-weight: bold !important; }
+        footer {
+            position: relative; 
+            margin-top: 20px;
+            font-size: 0.55rem; 
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            padding-bottom: 120px; /* ดัน footer ขึ้นจาก player */
+        }
+
+        /* สำหรับมือถือขนาดเล็กมาก */
+        @media (max-width: 360px) {
+            h1 { font-size: 1.5rem; }
+            .btn { height: 70px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="bg-main"></div>
-
-    <div id="overlay" onclick="startApp()">
-        <div style="text-align: center;">
-            <i class="fas fa-fingerprint" style="font-size: 3rem; margin-bottom: 15px;"></i>
-            <p style="font-family: 'Orbitron'; letter-spacing: 5px;">CLICK TO ENTER</p>
+    <div id="overlay" onclick="startWebsite()">
+        <div class="enter-text">
+            <i class="fas fa-fingerprint" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            CLICK TO ENTER
         </div>
     </div>
 
-    <div id="ad-container">
-        <div class="ad-card" id="ad-card">
-            <div class="close-ad" onclick="closeAd()"><i class="fas fa-times"></i></div>
-            <div class="ad-img-box"><img src="" id="db-ad-img"></div>
-            <div class="ad-body">
-                <div class="ad-title" id="db-ad-title">Loading...</div>
-                <div class="ad-desc" id="db-ad-desc">...</div>
-                <a href="" target="_blank" class="ad-btn" id="db-ad-link">GO TO POST</a>
+    <div class="top-nav">
+        <a href="#" class="nav-logo">
+            <img src="https://img2.pic.in.th/asdzx.png" alt="icon">
+            DERNYOUNGSAY
+        </a>
+        <div class="nav-text">MEMBER 2K26</div>
+    </div>
+
+    <div class="container">
+        <h1>DERNYOUNGSAY</h1> 
+        <div class="subtext">MEMBER DERNYOUNGSAY ORIGINAL</div>
+
+        <div class="button-group">
+            <a href="https://dernyoungsay.github.io/gg/" class="btn">
+                <span class="btn-text-main">ENTER MEMBER</span>
+                <span class="btn-text-sub">ACCESS GRANTED</span>
+            </a>
+        </div>
+
+        <footer>
+            © 2026 DERNYOUNGSAY
+        </footer>
+    </div>
+
+    <div class="music-player" id="player-container">
+        <div class="album-art">
+            <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
+        </div>
+        <div class="player-controls-mini">
+            <div class="music-title-mini" id="music-title">Loading...</div>
+            <div class="ctrl-btns">
+                <i class="fas fa-backward play-btn"></i>
+                <button class="play-btn" id="master-play"><i class="fas fa-play" id="play-icon"></i></button>
+                <i class="fas fa-forward play-btn"></i>
             </div>
         </div>
     </div>
 
-    <div id="admin-trigger" onclick="adminLogin()">ADMIN PANEL</div>
-
-    <div class="music-player pos-right" id="main-player">
-        <div class="mu-cover"><img src="" id="db-mu-cover"></div>
-        <div class="mu-info">
-            <div class="mu-title" id="db-mu-title">Loading Song...</div>
-            <div class="mu-status">NOW PLAYING</div>
-        </div>
-        <div class="mu-control" onclick="togglePlay()"><i class="fas fa-pause" id="play-icon"></i></div>
-    </div>
-
-    <div id="yt-player" style="display:none"></div>
+    <div id="youtube-player"></div>
 
     <script>
-        // Firebase Config
-        const firebaseConfig = { databaseURL: "https://dysx-f978c-default-rtdb.asia-southeast1.firebasedatabase.app/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let player;
-        let isPlaying = false;
-
-        // เชื่อมต่อ Realtime Database
-        function listenData() {
-            db.ref('website_settings').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if(!data) return;
-
-                // อัปเดตพื้นหลัง
-                document.getElementById('bg-main').style.backgroundImage = `url('${data.bgUrl}')`;
-
-                // อัปเดต Ad Banner
-                document.getElementById('db-ad-img').src = data.adImg;
-                document.getElementById('db-ad-title').innerText = data.adTitle;
-                document.getElementById('db-ad-desc').innerText = data.adDesc;
-                const adBtn = document.getElementById('db-ad-link');
-                adBtn.innerText = data.adBtnText || "VIEW POST";
-                adBtn.href = data.adLink;
-
-                // อัปเดตตำแหน่งเพลง
-                const pBox = document.getElementById('main-player');
-                pBox.className = `music-player pos-${data.musicPos || 'right'}`;
-
-                // อัปเดตเพลง (ถ้า ID เปลี่ยน)
-                if(player && data.ytId) {
-                    const currentId = player.getVideoData().video_id;
-                    if(currentId !== data.ytId) {
-                        player.loadVideoById(data.ytId);
-                        updateMusicUI(data.ytId);
-                    }
-                }
-            });
-        }
-
-        function updateMusicUI(id) {
-            document.getElementById('db-mu-cover').src = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
-            setTimeout(() => {
-                const title = player.getVideoData().title;
-                document.getElementById('db-mu-title').innerText = title || "YouTube Music";
-            }, 1000);
-        }
-
-        function startApp() {
-            document.getElementById('overlay').classList.add('hide');
-            document.getElementById('ad-container').style.display = 'flex';
-            setTimeout(() => document.getElementById('ad-card').classList.add('show'), 100);
-            if(player) player.playVideo();
-        }
-
-        function closeAd() {
-            document.getElementById('ad-container').style.opacity = '0';
-            setTimeout(() => document.getElementById('ad-container').style.display = 'none', 500);
-        }
-
-        function togglePlay() {
-            const icon = document.getElementById('play-icon');
-            if(isPlaying) {
-                player.pauseVideo();
-                icon.className = "fas fa-play";
-            } else {
-                player.playVideo();
-                icon.className = "fas fa-pause";
-            }
-            isPlaying = !isPlaying;
-        }
-
-        // YouTube API
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('yt-player', {
-                height: '0', width: '0', videoId: 'Ovo1y7Pllt8',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1 },
-                events: { 
-                    'onReady': listenData,
-                    'onStateChange': (e) => { isPlaying = (e.data == 1); }
-                }
-            });
-        }
-
-        // ระบบ Admin
-        async function adminLogin() {
-            const { value: pass } = await Swal.fire({
-                title: 'ADMIN LOGIN',
-                input: 'password',
-                inputPlaceholder: 'ใส่รหัสผ่าน...',
-                confirmButtonText: 'LOGIN'
-            });
-
-            if (pass === 'dys870') {
-                showAdminPanel();
-            } else if(pass) {
-                Swal.fire('Error', 'รหัสผ่านไม่ถูกต้อง!', 'error');
-            }
-        }
-
-        async function showAdminPanel() {
-            const snap = await db.ref('website_settings').once('value');
-            const d = snap.val() || {};
-
-            const { value: formValues } = await Swal.fire({
-                title: 'EDIT SYSTEM',
-                html:
-                    `<label style="font-size:0.7rem; color:#888;">YOUTUBE VIDEO ID</label>` +
-                    `<input id="sw-yt" class="swal2-input" placeholder="ID หลัง v=" value="${d.ytId || ''}">` +
-                    `<label style="font-size:0.7rem; color:#888;">AD IMAGE URL</label>` +
-                    `<input id="sw-adImg" class="swal2-input" placeholder="URL รูปโฆษณา" value="${d.adImg || ''}">` +
-                    `<label style="font-size:0.7rem; color:#888;">AD TITLE / DESC</label>` +
-                    `<input id="sw-adTitle" class="swal2-input" placeholder="หัวข้อ" value="${d.adTitle || ''}">` +
-                    `<input id="sw-adDesc" class="swal2-input" placeholder="รายละเอียด" value="${d.adDesc || ''}">` +
-                    `<label style="font-size:0.7rem; color:#888;">BUTTON TEXT / LINK</label>` +
-                    `<input id="sw-adBtn" class="swal2-input" placeholder="ข้อความบนปุ่ม" value="${d.adBtnText || ''}">` +
-                    `<input id="sw-adLink" class="swal2-input" placeholder="ลิงก์ปุ่มโฆษณา" value="${d.adLink || ''}">` +
-                    `<label style="font-size:0.7rem; color:#888;">BACKGROUND / MUSIC POS</label>` +
-                    `<input id="sw-bg" class="swal2-input" placeholder="URL พื้นหลัง" value="${d.bgUrl || ''}">` +
-                    `<input id="sw-pos" class="swal2-input" placeholder="left หรือ right" value="${d.musicPos || 'right'}">`,
-                focusConfirm: false,
-                confirmButtonText: 'SAVE SETTINGS',
-                preConfirm: () => {
-                    return {
-                        ytId: document.getElementById('sw-yt').value,
-                        adImg: document.getElementById('sw-adImg').value,
-                        adTitle: document.getElementById('sw-adTitle').value,
-                        adDesc: document.getElementById('sw-adDesc').value,
-                        adBtnText: document.getElementById('sw-adBtn').value,
-                        adLink: document.getElementById('sw-adLink').value,
-                        bgUrl: document.getElementById('sw-bg').value,
-                        musicPos: document.getElementById('sw-pos').value
-                    }
-                }
-            });
-
-            if (formValues) {
-                db.ref('website_settings').update(formValues);
-                Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลสำเร็จ!', showConfirmButton: false, timer: 1500 });
-            }
-        }
-
-        // Load YouTube SDK
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var videoId = 'Ovo1y7Pllt8'; 
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0', width: '0',
+                videoId: videoId,
+                playerVars: { 
+                    'autoplay': 0, 
+                    'loop': 1, 
+                    'playlist': videoId,
+                    'controls': 0,
+                    'mute': 0,
+                    'playsinline': 1 // สำคัญมากเพื่อให้เล่นบนมือถือได้โดยไม่เด้งเต็มจอ
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function startWebsite() {
+            document.getElementById('overlay').classList.add('fade-out');
+            if (player) {
+                player.playVideo();
+                player.unMute();
+                player.setVolume(100);
+            }
+        }
+
+        function onPlayerReady(event) {
+            try {
+                var title = player.getVideoData().title;
+                document.getElementById('music-title').innerText = title || "Now Playing";
+            } catch(e) {
+                document.getElementById('music-title').innerText = "Music Playing";
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            const icon = document.getElementById('play-icon');
+            const cont = document.getElementById('player-container');
+            if (event.data == YT.PlayerState.PLAYING) {
+                icon.className = 'fas fa-pause';
+                cont.classList.add('playing');
+            } else {
+                icon.className = 'fas fa-play';
+                cont.classList.remove('playing');
+            }
+        }
+
+        document.getElementById('master-play').addEventListener('click', function() {
+            if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
     </script>
 </body>
 </html>
