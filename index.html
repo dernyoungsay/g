@@ -13,7 +13,6 @@
     <style>
         :root {
             --accent-color: #00d4ff;
-            --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.15);
             --player-bg: rgba(10, 10, 10, 0.6);
         }
@@ -32,42 +31,46 @@
             position: relative;
         }
 
-        /* --- New: ป้ายกระจกเปียกน้ำ (Wet Glass Sign) --- */
-        .brand-banner {
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 30px 60px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
-            margin-bottom: 20px;
-            overflow: hidden; /* สำหรับเอฟเฟกต์น้ำไหลข้างใน */
+        /* --- ข้อความด้านบนสุด --- */
+        .top-greeting {
+            position: absolute;
+            top: 15%;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 5px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color);
+            opacity: 0.8;
+            animation: fadeInOut 3s infinite ease-in-out;
         }
 
-        .brand-banner::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/glass-fog.png');
-            opacity: 0.3;
-            pointer-events: none;
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* --- ส่วนของชื่อหลัก (ไม่มีกรอบ) --- */
+        .brand-container {
+            position: relative;
+            display: inline-block;
+            padding: 20px;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 12vw, 5.5rem);
-            letter-spacing: 12px;
-            color: #ffffff; /* ฟอนต์สีขาวตามที่ขอ */
-            text-shadow: 0 0 30px rgba(255,255,255,0.2);
+            font-size: clamp(2.5rem, 12vw, 6rem);
+            letter-spacing: 15px;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
             position: relative;
             z-index: 1;
             margin: 0;
-            line-height: 1.2;
+            line-height: 1;
+            /* ทำให้ฟอนต์ดู Smooth คลีน */
+            font-weight: 700;
         }
 
-        /* เอฟเฟกต์หยดน้ำเกาะที่ตัวอักษร (Water Droplets on Text) */
+        /* เอฟเฟกต์หยดน้ำที่ตัวอักษร */
         .text-droplets {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -75,31 +78,17 @@
             z-index: 2;
         }
 
-        /* --- เอฟเฟกต์สาดน้ำ (Splash) --- */
-        .splash-particle {
-            position: absolute;
-            pointer-events: none;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(0,212,255,0.4) 100%);
-            border-radius: 50%;
-            z-index: 9999;
-            animation: splashAnim 0.8s ease-out forwards;
-        }
-        @keyframes splashAnim {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
-        }
-
-        /* --- บรรยากาศรอบๆ --- */
+        /* --- เอฟเฟกต์บรรยากาศ --- */
         .wet-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 4; opacity: 0.6;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 4; opacity: 0.5;
         }
         .droplet {
             position: absolute; background: rgba(255, 255, 255, 0.3);
             border-radius: 50%; filter: blur(1px);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2), 2px 2px 4px rgba(255,255,255,0.1);
         }
+
         .rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
         .drop {
             position: absolute; background: rgba(255, 255, 255, 0.2);
@@ -113,37 +102,49 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: opacity 1.2s ease, visibility 1.2s;
+            cursor: pointer; transition: opacity 1.2s ease;
         }
         #overlay.fade-out { opacity: 0; visibility: hidden; }
 
         .container { text-align: center; z-index: 10; position: relative; }
+        
         .subtext {
-            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 8px;
-            color: rgba(255,255,255,0.4); margin-bottom: 40px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 8px;
+            color: rgba(255,255,255,0.3); margin-top: 20px; margin-bottom: 40px;
         }
 
         .btn {
             display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 300px; height: 75px; background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border); border-radius: 50px;
-            backdrop-filter: blur(10px); text-decoration: none; transition: 0.4s;
-            color: #fff;
+            width: 280px; height: 70px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border); border-radius: 15px;
+            backdrop-filter: blur(10px); text-decoration: none; transition: 0.4s; color: #fff;
         }
-        .btn:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); transform: scale(1.05); }
+        .btn:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); transform: translateY(-5px); }
 
+        /* Music Player */
         .music-player {
-            position: fixed; bottom: 30px; right: 30px; width: 300px;
-            background: var(--player-bg); backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px;
+            position: fixed; bottom: 30px; right: 30px; width: 280px;
+            background: var(--player-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 15px; padding: 10px;
             display: flex; align-items: center; z-index: 1000;
         }
-        .album-art { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; }
+        .album-art { width: 50px; height: 50px; border-radius: 10px; overflow: hidden; }
         .album-art img { width: 100%; height: 100%; object-fit: cover; }
         .playing img { animation: rotateDisk 10s linear infinite; }
         @keyframes rotateDisk { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         #youtube-player { position: absolute; top: -1000px; }
+
+        /* Splash Effect */
+        .splash-particle {
+            position: absolute; pointer-events: none;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(0,212,255,0.4) 100%);
+            border-radius: 50%; z-index: 9999; animation: splashAnim 0.8s ease-out forwards;
+        }
+        @keyframes splashAnim {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
     </style>
 </head>
 <body onclick="createSplash(event)">
@@ -151,14 +152,16 @@
     <div class="wet-screen" id="wet-screen"></div>
 
     <div id="overlay" onclick="startWebsite()">
-        <i class="fa-solid fa-droplet" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 25px; filter: drop-shadow(0 0 20px var(--accent-color)); animation: pulse 2s infinite;"></i>
-        <div style="font-family: 'Orbitron'; letter-spacing: 5px; color: #fff;">CLICK TO ENTER</div>
+        <i class="fa-solid fa-water" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 20px; animation: pulse 2s infinite;"></i>
+        <div style="font-family: 'Orbitron'; letter-spacing: 5px; color: #fff;">CLICK TO UNLOCK</div>
     </div>
 
     <div class="rain" id="rain"></div>
 
+    <div class="top-greeting">HAPPY SONGKRAN DAY</div>
+
     <div class="container">
-        <div class="brand-banner">
+        <div class="brand-container">
             <h1>DERNYOUNGSAY</h1>
             <div class="text-droplets" id="text-droplets"></div>
         </div>
@@ -166,29 +169,29 @@
         <div class="subtext">THE ORIGINAL LEGACY MEMBER</div>
         
         <a href="https://dernyoungsay.github.io/gg/" class="btn">
-            <span style="font-weight: bold; letter-spacing: 2px;">MEMBER ENTER</span>
-            <span style="font-size: 0.6rem; opacity: 0.5;">Songkran Special 2K26</span>
+            <span style="font-weight: bold; letter-spacing: 2px; font-size: 0.9rem;">MEMBER ENTER</span>
+            <span style="font-size: 0.55rem; opacity: 0.5; margin-top: 5px;">Songkran Edition 2K26</span>
         </a>
     </div>
 
     <div class="music-player" id="player-container">
         <div class="album-art"><img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" id="music-cover"></div>
-        <div style="flex-grow: 1; margin-left: 15px; overflow: hidden;">
-            <div id="music-title" style="font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Songkran Vibes...</div>
-            <div style="display: flex; gap: 15px;">
-                <button style="background:none; border:none; color:#fff; cursor:pointer;" id="master-play"><i class="fas fa-play" id="play-icon"></i></button>
-            </div>
+        <div style="flex-grow: 1; margin-left: 12px; overflow: hidden;">
+            <div id="music-title" style="font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #aaa;">Now Playing...</div>
+            <button style="background:none; border:none; color:#fff; cursor:pointer; margin-top: 5px;" id="master-play">
+                <i class="fas fa-play" id="play-icon"></i>
+            </button>
         </div>
     </div>
 
     <div id="youtube-player"></div>
 
     <script>
-        // สร้างหยดน้ำบนหน้าจอ
+        // สร้างหยดน้ำบนหน้าจอทั่วไป
         const wetScreen = document.getElementById('wet-screen');
-        for(let i=0; i<40; i++) {
+        for(let i=0; i<30; i++) {
             const d = document.createElement('div');
-            const size = Math.random() * 10 + 5;
+            const size = Math.random() * 12 + 5;
             d.className = 'droplet';
             d.style.width = size + 'px';
             d.style.height = (size + Math.random() * 10) + 'px';
@@ -197,24 +200,31 @@
             wetScreen.appendChild(d);
         }
 
-        // สร้างหยดน้ำที่ป้ายคำว่า DERNYOUNGSAY
+        // สร้างหยดน้ำที่ตัวอักษร DERNYOUNGSAY (ไหลลงตามแนวตัวอักษร)
         const textDroplets = document.getElementById('text-droplets');
-        for(let i=0; i<15; i++) {
+        function createTextDroplet() {
             const d = document.createElement('div');
-            const size = Math.random() * 8 + 3;
+            const size = Math.random() * 6 + 2;
             d.className = 'droplet';
             d.style.width = size + 'px';
-            d.style.height = (size + 10) + 'px';
-            d.style.left = Math.random() * 90 + 5 + '%';
-            d.style.top = Math.random() * 80 + '%';
+            d.style.height = (size + 5) + 'px';
+            d.style.left = Math.random() * 95 + '%';
+            d.style.top = '-10px';
             d.style.background = 'rgba(255,255,255,0.4)';
-            d.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
+            d.style.transition = `top ${Math.random() * 2 + 2}s linear`;
             textDroplets.appendChild(d);
+            
+            setTimeout(() => {
+                d.style.top = '110%';
+            }, 100);
+            
+            setTimeout(() => d.remove(), 4000);
         }
+        setInterval(createTextDroplet, 500);
 
-        // ฝนตก
+        // ฝนตกพื้นหลัง
         const rain = document.getElementById('rain');
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 25; i++) {
             const dr = document.createElement('div');
             dr.className = 'drop';
             dr.style.left = Math.random() * 100 + 'vw';
@@ -222,21 +232,21 @@
             rain.appendChild(dr);
         }
 
-        // คลิกสาดน้ำ
+        // เอฟเฟกต์สาดน้ำ
         function createSplash(e) {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 8; i++) {
                 const p = document.createElement('div');
                 p.className = 'splash-particle';
                 p.style.left = e.clientX + 'px'; p.style.top = e.clientY + 'px';
-                p.style.width = p.style.height = Math.random() * 15 + 10 + 'px';
-                p.style.setProperty('--tx', (Math.random()-0.5)*300+'px');
-                p.style.setProperty('--ty', (Math.random()-0.5)*300+'px');
+                p.style.width = p.style.height = Math.random() * 12 + 8 + 'px';
+                p.style.setProperty('--tx', (Math.random()-0.5)*250+'px');
+                p.style.setProperty('--ty', (Math.random()-0.5)*250+'px');
                 document.body.appendChild(p);
                 setTimeout(() => p.remove(), 800);
             }
         }
 
-        // YouTube Control
+        // YouTube
         var player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
