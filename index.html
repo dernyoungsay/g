@@ -12,13 +12,10 @@
     
     <style>
         :root {
-            /* ปรับโทนสีเป็นสีฟ้าน้ำสงกรานต์ */
-            --primary-glow: rgba(0, 212, 255, 0.3);
             --accent-color: #00d4ff;
             --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(0, 212, 255, 0.2);
-            --songkran-blue: #0093E9;
-            --songkran-cyan: #80D0C7;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --player-bg: rgba(10, 10, 10, 0.6);
         }
 
         * {
@@ -29,7 +26,7 @@
         }
 
         body {
-            background-color: #020b1a; /* พื้นหลังน้ำเงินเข้ม */
+            background-color: #000;
             color: #ffffff;
             font-family: 'Inter', 'Kanit', sans-serif;
             min-height: 100vh;
@@ -40,267 +37,275 @@
             position: relative;
         }
 
+        /* --- เอฟเฟกต์ไอน้ำและหยดน้ำ --- */
+        .steam-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/glass-fog.png');
+            opacity: 0.4;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .water-splash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 212, 255, 0.05));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .rain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .drop {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            width: 1px;
+            height: 50px;
+            top: -100px;
+            animation: fall 1.5s linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(110vh); }
+        }
+
         /* --- Overlay --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #020b1a 0%, #000 100%);
+            background: #000;
             z-index: 10000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: opacity 1.2s cubic-bezier(0.7, 0, 0.3, 1), visibility 1.2s;
+            transition: opacity 1.2s ease, visibility 1.2s;
         }
-        
-        #overlay.fade-out { 
-            opacity: 0; 
-            visibility: hidden;
-        }
-
-        .enter-text-wrapper {
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-        }
+        #overlay.fade-out { opacity: 0; visibility: hidden; }
 
         .water-drop-icon {
             font-size: 4rem;
             color: var(--accent-color);
             margin-bottom: 25px;
-            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.5));
-            animation: ripple 2s infinite ease-in-out;
-            cursor: pointer;
+            filter: drop-shadow(0 0 20px var(--accent-color));
+            animation: pulse 2s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
 
-        @keyframes ripple {
-            0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-color)); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--accent-color)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-color)); }
-        }
-
-        .main-enter-text {
-            font-size: 1.2rem;
-            letter-spacing: 12px; 
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-weight: 400;
-        }
-
-        .sub-enter-text {
-            font-size: 0.6rem;
-            letter-spacing: 5px;
-            color: var(--accent-color);
-            opacity: 0.7;
-            font-weight: 300;
-        }
-
-        /* --- Background --- */
-        .bg-wrapper {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            /* พื้นหลังรูปภาพที่เกี่ยวกับสงกรานต์หรือโทนน้ำ */
-            background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
-            filter: brightness(0.4) saturate(1.5) blur(2px);
-            transform: scale(1.1);
-            transition: transform 10s ease-out;
-        }
-        body.loaded .bg-wrapper { transform: scale(1); }
-
-        /* เอฟเฟกต์ละอองน้ำ (Overlay) */
-        .water-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(0,147,233,0.1) 0%, rgba(128,208,199,0.1) 100%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* --- Nav --- */
-        .top-nav {
-            position: fixed;
-            top: 25px;
-            width: 90%;
-            max-width: 500px;
-            background: rgba(0, 212, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 100px;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 1s ease 0.5s;
-        }
-        body.loaded .top-nav { opacity: 1; transform: translateY(0); }
-
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-        .nav-logo img { width: 18px; filter: drop-shadow(0 0 5px var(--accent-color)); }
-        .nav-text { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: var(--accent-color); letter-spacing: 2px; }
-
-        /* --- Content --- */
+        /* --- Main Content --- */
         .container {
             text-align: center;
             z-index: 10;
-            width: 100%;
-            padding: 0 30px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1s ease 0.8s;
+            position: relative;
         }
-        body.loaded .container { opacity: 1; transform: translateY(0); }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.8rem, 7vw, 4rem);
-            font-weight: 700;
-            letter-spacing: 10px;
-            margin-bottom: 10px;
-            /* Gradient สีน้ำฟ้า */
-            background: linear-gradient(180deg, #fff 0%, var(--accent-color) 100%);
+            font-size: clamp(2rem, 10vw, 4.5rem);
+            letter-spacing: 15px;
+            background: linear-gradient(180deg, #fff, #555);
             -webkit-background-clip: text;
-            background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
+            margin-bottom: 10px;
         }
 
         .subtext {
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 4px;
-            color: var(--accent-color);
-            margin-bottom: 50px;
-            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 40px;
         }
 
         .btn {
-            position: relative;
             display: inline-flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            width: 100%;
-            max-width: 280px;
-            height: 75px;
-            text-decoration: none;
-            background: rgba(0, 212, 255, 0.1);
+            justify-content: center;
+            width: 280px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            border-radius: 15px;
             backdrop-filter: blur(10px);
-            cursor: pointer;
+            text-decoration: none;
+            transition: 0.4s;
         }
         .btn:hover {
-            background: rgba(0, 212, 255, 0.2);
+            background: rgba(0, 212, 255, 0.1);
             border-color: var(--accent-color);
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
         }
-        .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; }
-        .btn-text-sub { font-family: 'Kanit', sans-serif; font-size: 0.6rem; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-top: 5px; }
+        .btn-text-main { color: #fff; font-weight: bold; letter-spacing: 2px; }
+        .btn-text-sub { font-size: 0.6rem; color: rgba(255,255,255,0.3); }
 
-        /* --- Music Player --- */
+        /* --- New Music Player UI (ขวาล่าง) --- */
         .music-player {
             position: fixed;
             bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 30px; /* ย้ายมาไว้ขวาล่าง */
             width: 300px;
-            background: rgba(2, 11, 26, 0.8);
+            background: var(--player-bg);
             backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 12px;
             display: flex;
             align-items: center;
             z-index: 1000;
-            opacity: 0;
-            transition: all 1s ease 1s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        body.loaded .music-player { opacity: 1; }
+
+        .music-player:hover {
+            transform: scale(1.02);
+            border-color: rgba(0, 212, 255, 0.3);
+            background: rgba(20, 20, 20, 0.8);
+        }
 
         .album-art {
-            width: 50px; height: 50px; border-radius: 12px;
-            overflow: hidden; border: 1px solid var(--glass-border);
+            width: 60px; height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            position: relative;
         }
-        .playing .album-art { animation: rotateArt 5s infinite linear; }
-        @keyframes rotateArt { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .album-art img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         
-        .album-art img { width: 100%; height: 100%; object-fit: cover; }
-        .player-controls-mini { flex-grow: 1; margin-left: 15px; overflow: hidden; }
+        .playing .album-art img {
+            animation: rotateDisk 10s linear infinite;
+        }
+
+        @keyframes rotateDisk {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .player-info {
+            flex-grow: 1;
+            margin-left: 15px;
+            overflow: hidden;
+        }
+        
         .music-title-mini {
-            font-size: 0.6rem; color: #fff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin-bottom: 6px;
-        }
-        .ctrl-btns { display: flex; align-items: center; gap: 20px; }
-        .play-btn { background: none; border: none; color: var(--accent-color); font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
-
-        footer {
-            margin-top: 40px;
-            font-size: 0.55rem;
-            color: rgba(0, 212, 255, 0.4);
-            letter-spacing: 2px;
-            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 10px;
+            font-family: 'Kanit', sans-serif;
         }
 
-        #youtube-player { position: absolute; top: -1000px; left: -1000px; visibility: hidden; }
+        .ctrl-btns {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 18px;
+        }
 
+        .play-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .play-btn:hover {
+            color: var(--accent-color);
+            transform: scale(1.2);
+        }
+
+        #master-play {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.8rem;
+        }
+
+        #master-play:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        /* --- UI ส่วนหน้า --- */
+        .top-nav {
+            position: fixed;
+            top: 25px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            z-index: 1000;
+        }
+
+        #youtube-player { position: absolute; top: -1000px; }
+
+        /* ปรับแต่งสำหรับมือถือ */
         @media (max-width: 480px) {
-            h1 { letter-spacing: 5px; }
-            .top-nav { width: 85%; }
+            .music-player {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                width: auto;
+            }
         }
+
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="startWebsite()">
-        <div class="enter-text-wrapper">
-            <i class="fa-solid fa-droplet water-drop-icon"></i>
-            <div class="main-enter-text">SONGKRAN 2026</div>
-            <div class="sub-enter-text">HAPPY WATER FESTIVAL</div>
-        </div>
+        <i class="fa-solid fa-droplet water-drop-icon"></i>
+        <div style="font-family: 'Orbitron'; letter-spacing: 5px; color: #fff;">CLICK TO UNLOCK</div>
+        <div style="font-size: 0.6rem; color: #555; margin-top: 10px;">SONGKRAN SYSTEM 2026</div>
     </div>
 
-    <div class="bg-wrapper"></div>
-    <div class="water-overlay"></div>
+    <div class="steam-overlay"></div>
+    <div class="water-splash"></div>
+    <div class="rain" id="rain"></div>
 
     <div class="top-nav">
-        <a href="#" class="nav-logo">
-            <img src="https://img2.pic.in.th/asdzx.png" alt="icon">
-            DERNYOUNGSAY
-        </a>
-        <div class="nav-text">SONGKRAN V.2</div>
+        <div style="font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold;">
+            <i class="fa-solid fa-water" style="color: var(--accent-color);"></i> DERNYOUNGSAY
+        </div>
+        <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: #555;">V.2026.SONGKRAN</div>
     </div>
 
     <div class="container">
-        <h1>SONGKRAN</h1> 
-        <div class="subtext">Sawatdee Pee Mai Thai - 2K26</div>
+        <h1>DERNYOUNGSAY</h1>
+        <div class="subtext">THE ORIGINAL LEGACY MEMBER</div>
 
-        <div class="button-group">
-            <a href="https://dernyoungsay.github.io/gg/" class="btn">
-                <span class="btn-text-main">MEMBER ENTER</span>
-                <span class="btn-text-sub">เข้าสู่ระบบสมาชิก 2026</span>
-            </a>
-        </div>
+        <a href="https://dernyoungsay.github.io/gg/" class="btn">
+            <span class="btn-text-main">MEMBER ENTER</span>
+            <span class="btn-text-sub">Songkran Special 2K26</span>
+        </a>
 
-        <footer>
-            &copy; 2026 SONGKRAN FESTIVAL BY DERNYOUNGSAY
+        <footer style="margin-top: 40px; font-size: 0.5rem; color: #333; font-family: 'Orbitron'; letter-spacing: 2px;">
+            SYSTEM BY DERNYOUNGSAY &copy; 2026
         </footer>
     </div>
 
@@ -308,14 +313,14 @@
         <div class="album-art">
             <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
         </div>
-        <div class="player-controls-mini">
+        <div class="player-info">
             <div class="music-title-mini" id="music-title">Songkran Vibes...</div>
             <div class="ctrl-btns">
-                <i class="fas fa-step-backward play-btn"></i>
+                <button class="play-btn"><i class="fas fa-backward"></i></button>
                 <button class="play-btn" id="master-play">
                     <i class="fas fa-play" id="play-icon"></i>
                 </button>
-                <i class="fas fa-step-forward play-btn"></i>
+                <button class="play-btn"><i class="fas fa-forward"></i></button>
             </div>
         </div>
     </div>
@@ -323,44 +328,37 @@
     <div id="youtube-player"></div>
 
     <script>
+        const rainContainer = document.getElementById('rain');
+        for (let i = 0; i < 20; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'drop';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDelay = Math.random() * 2 + 's';
+            drop.style.opacity = Math.random() * 0.3;
+            rainContainer.appendChild(drop);
+        }
+
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
-        var videoId = 'Ovo1y7Pllt8'; 
-
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '0', width: '0',
-                videoId: videoId,
+                videoId: 'Ovo1y7Pllt8',
                 playerVars: { 
                     'autoplay': 0, 
                     'loop': 1, 
-                    'playlist': videoId,
-                    'controls': 0,
-                    'showinfo': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3
+                    'playlist': 'Ovo1y7Pllt8',
+                    'controls': 0
                 },
-                events: {
+                events: { 
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onStateChange': onPlayerStateChange 
                 }
             });
-        }
-
-        function startWebsite() {
-            document.body.classList.add('loaded');
-            const overlay = document.getElementById('overlay');
-            overlay.classList.add('fade-out');
-            
-            if (player && typeof player.playVideo === 'function') {
-                player.unMute();
-                player.setVolume(80);
-                player.playVideo();
-            }
         }
 
         function onPlayerReady(event) {
@@ -369,24 +367,33 @@
 
         function updateTitle() {
             try {
-                const videoData = player.getVideoData();
-                if (videoData && videoData.title) {
-                    document.getElementById('music-title').innerText = videoData.title;
+                const data = player.getVideoData();
+                if(data && data.title) {
+                    document.getElementById('music-title').innerText = data.title;
                 }
             } catch(e) {}
         }
 
+        function startWebsite() {
+            const overlay = document.getElementById('overlay');
+            overlay.classList.add('fade-out');
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+                player.unMute();
+                player.setVolume(80);
+            }
+        }
+
         function onPlayerStateChange(event) {
             const icon = document.getElementById('play-icon');
-            const cont = document.getElementById('player-container');
-            
+            const container = document.getElementById('player-container');
             if (event.data == YT.PlayerState.PLAYING) {
                 icon.className = 'fas fa-pause';
-                cont.classList.add('playing');
+                container.classList.add('playing');
                 updateTitle();
             } else {
                 icon.className = 'fas fa-play';
-                cont.classList.remove('playing');
+                container.classList.remove('playing');
             }
         }
 
@@ -399,7 +406,7 @@
             }
         });
 
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
