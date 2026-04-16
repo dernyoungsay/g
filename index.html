@@ -14,7 +14,7 @@
         :root {
             --accent-color: #00d4ff;
             --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.15);
             --player-bg: rgba(10, 10, 10, 0.6);
         }
 
@@ -32,21 +32,47 @@
             position: relative;
         }
 
-        /* --- เอฟเฟกต์เปียก (Screen Droplets) --- */
-        .wet-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 4;
-            opacity: 0.6;
+        /* --- New: ป้ายกระจกเปียกน้ำ (Wet Glass Sign) --- */
+        .brand-banner {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px 60px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            overflow: hidden; /* สำหรับเอฟเฟกต์น้ำไหลข้างใน */
         }
 
-        .droplet {
+        .brand-banner::before {
+            content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            filter: blur(1px);
-            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2), 2px 2px 4px rgba(255,255,255,0.1);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/glass-fog.png');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 12vw, 5.5rem);
+            letter-spacing: 12px;
+            color: #ffffff; /* ฟอนต์สีขาวตามที่ขอ */
+            text-shadow: 0 0 30px rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* เอฟเฟกต์หยดน้ำเกาะที่ตัวอักษร (Water Droplets on Text) */
+        .text-droplets {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
         }
 
         /* --- เอฟเฟกต์สาดน้ำ (Splash) --- */
@@ -58,20 +84,22 @@
             z-index: 9999;
             animation: splashAnim 0.8s ease-out forwards;
         }
-
         @keyframes splashAnim {
             0% { transform: scale(0); opacity: 1; }
             100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
         }
 
-        /* --- พื้นหลังและบรรยากาศ --- */
-        .steam-overlay {
+        /* --- บรรยากาศรอบๆ --- */
+        .wet-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/glass-fog.png');
-            opacity: 0.4; z-index: 2; pointer-events: none;
+            pointer-events: none; z-index: 4; opacity: 0.6;
         }
-
+        .droplet {
+            position: absolute; background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%; filter: blur(1px);
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2), 2px 2px 4px rgba(255,255,255,0.1);
+        }
         .rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
         .drop {
             position: absolute; background: rgba(255, 255, 255, 0.2);
@@ -80,76 +108,40 @@
         }
         @keyframes fall { to { transform: translateY(110vh); } }
 
-        /* --- Overlay --- */
+        /* --- Overlay & UI --- */
         #overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; transition: opacity 1.2s ease, visibility 1.2s;
         }
         #overlay.fade-out { opacity: 0; visibility: hidden; }
 
-        .water-drop-icon {
-            font-size: 4rem; color: var(--accent-color); margin-bottom: 25px;
-            filter: drop-shadow(0 0 20px var(--accent-color));
-            animation: pulse 2s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* --- Content --- */
         .container { text-align: center; z-index: 10; position: relative; }
-        h1 {
-            font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 10vw, 4.5rem);
-            letter-spacing: 15px; background: linear-gradient(180deg, #fff, #555);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
         .subtext {
-            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 5px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 8px;
             color: rgba(255,255,255,0.4); margin-bottom: 40px;
         }
 
         .btn {
             display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 280px; height: 70px; background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border); border-radius: 15px;
+            width: 300px; height: 75px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border); border-radius: 50px;
             backdrop-filter: blur(10px); text-decoration: none; transition: 0.4s;
+            color: #fff;
         }
-        .btn:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); transform: translateY(-5px); }
+        .btn:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); transform: scale(1.05); }
 
-        /* --- Music Player UI (ขวาล่าง) --- */
         .music-player {
             position: fixed; bottom: 30px; right: 30px; width: 300px;
             background: var(--player-bg); backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px;
             display: flex; align-items: center; z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-
-        .album-art {
-            width: 60px; height: 60px; border-radius: 12px; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
-        }
+        .album-art { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; }
         .album-art img { width: 100%; height: 100%; object-fit: cover; }
-        .playing .album-art img { animation: rotateDisk 10s linear infinite; }
+        .playing img { animation: rotateDisk 10s linear infinite; }
         @keyframes rotateDisk { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .player-info { flex-grow: 1; margin-left: 15px; overflow: hidden; }
-        .music-title-mini { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 10px; }
-        .ctrl-btns { display: flex; align-items: center; gap: 18px; }
-        .play-btn { background: none; border: none; color: #aaa; cursor: pointer; transition: 0.3s; }
-        .play-btn:hover { color: var(--accent-color); }
-        #master-play { width: 35px; height: 35px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-
-        .top-nav {
-            position: fixed; top: 25px; width: 90%; max-width: 500px;
-            display: flex; justify-content: space-between; padding: 10px 20px;
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 50px; z-index: 1000;
-        }
 
         #youtube-player { position: absolute; top: -1000px; }
     </style>
@@ -159,45 +151,32 @@
     <div class="wet-screen" id="wet-screen"></div>
 
     <div id="overlay" onclick="startWebsite()">
-        <i class="fa-solid fa-droplet water-drop-icon"></i>
-        <div style="font-family: 'Orbitron'; letter-spacing: 5px; color: #fff;">CLICK TO UNLOCK</div>
-        <div style="font-size: 0.6rem; color: #555; margin-top: 10px;">SONGKRAN SYSTEM 2026</div>
+        <i class="fa-solid fa-droplet" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 25px; filter: drop-shadow(0 0 20px var(--accent-color)); animation: pulse 2s infinite;"></i>
+        <div style="font-family: 'Orbitron'; letter-spacing: 5px; color: #fff;">CLICK TO ENTER</div>
     </div>
 
-    <div class="steam-overlay"></div>
     <div class="rain" id="rain"></div>
 
-    <div class="top-nav">
-        <div style="font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold;">
-            <i class="fa-solid fa-water" style="color: var(--accent-color);"></i> DERNYOUNGSAY
-        </div>
-        <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: #555;">V.2026.SONGKRAN</div>
-    </div>
-
     <div class="container">
-        <h1>DERNYOUNGSAY</h1>
+        <div class="brand-banner">
+            <h1>DERNYOUNGSAY</h1>
+            <div class="text-droplets" id="text-droplets"></div>
+        </div>
+        
         <div class="subtext">THE ORIGINAL LEGACY MEMBER</div>
+        
         <a href="https://dernyoungsay.github.io/gg/" class="btn">
-            <span class="btn-text-main">MEMBER ENTER</span>
-            <span class="btn-text-sub">Songkran Special 2K26</span>
+            <span style="font-weight: bold; letter-spacing: 2px;">MEMBER ENTER</span>
+            <span style="font-size: 0.6rem; opacity: 0.5;">Songkran Special 2K26</span>
         </a>
-        <footer style="margin-top: 40px; font-size: 0.5rem; color: #333; font-family: 'Orbitron'; letter-spacing: 2px;">
-            SYSTEM BY DERNYOUNGSAY &copy; 2026
-        </footer>
     </div>
 
     <div class="music-player" id="player-container">
-        <div class="album-art">
-            <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
-        </div>
-        <div class="player-info">
-            <div class="music-title-mini" id="music-title">Songkran Vibes...</div>
-            <div class="ctrl-btns">
-                <button class="play-btn"><i class="fas fa-backward"></i></button>
-                <button class="play-btn" id="master-play">
-                    <i class="fas fa-play" id="play-icon"></i>
-                </button>
-                <button class="play-btn"><i class="fas fa-forward"></i></button>
+        <div class="album-art"><img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" id="music-cover"></div>
+        <div style="flex-grow: 1; margin-left: 15px; overflow: hidden;">
+            <div id="music-title" style="font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Songkran Vibes...</div>
+            <div style="display: flex; gap: 15px;">
+                <button style="background:none; border:none; color:#fff; cursor:pointer;" id="master-play"><i class="fas fa-play" id="play-icon"></i></button>
             </div>
         </div>
     </div>
@@ -205,61 +184,59 @@
     <div id="youtube-player"></div>
 
     <script>
-        // สร้างฝน
-        const rainContainer = document.getElementById('rain');
-        for (let i = 0; i < 20; i++) {
-            const drop = document.createElement('div');
-            drop.className = 'drop';
-            drop.style.left = Math.random() * 100 + 'vw';
-            drop.style.animationDelay = Math.random() * 2 + 's';
-            rainContainer.appendChild(drop);
-        }
-
-        // สร้างหยดน้ำเปียกหน้าจอแบบสุ่ม
+        // สร้างหยดน้ำบนหน้าจอ
         const wetScreen = document.getElementById('wet-screen');
-        function addDroplets() {
-            for(let i=0; i<30; i++) {
-                const d = document.createElement('div');
-                const size = Math.random() * 15 + 5;
-                d.className = 'droplet';
-                d.style.width = size + 'px';
-                d.style.height = (size + Math.random() * 10) + 'px';
-                d.style.left = Math.random() * 100 + 'vw';
-                d.style.top = Math.random() * 100 + 'vh';
-                d.style.opacity = Math.random() * 0.5;
-                wetScreen.appendChild(d);
-            }
+        for(let i=0; i<40; i++) {
+            const d = document.createElement('div');
+            const size = Math.random() * 10 + 5;
+            d.className = 'droplet';
+            d.style.width = size + 'px';
+            d.style.height = (size + Math.random() * 10) + 'px';
+            d.style.left = Math.random() * 100 + 'vw';
+            d.style.top = Math.random() * 100 + 'vh';
+            wetScreen.appendChild(d);
         }
-        addDroplets();
 
-        // ฟังก์ชันสาดน้ำเมื่อคลิก
+        // สร้างหยดน้ำที่ป้ายคำว่า DERNYOUNGSAY
+        const textDroplets = document.getElementById('text-droplets');
+        for(let i=0; i<15; i++) {
+            const d = document.createElement('div');
+            const size = Math.random() * 8 + 3;
+            d.className = 'droplet';
+            d.style.width = size + 'px';
+            d.style.height = (size + 10) + 'px';
+            d.style.left = Math.random() * 90 + 5 + '%';
+            d.style.top = Math.random() * 80 + '%';
+            d.style.background = 'rgba(255,255,255,0.4)';
+            d.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
+            textDroplets.appendChild(d);
+        }
+
+        // ฝนตก
+        const rain = document.getElementById('rain');
+        for (let i = 0; i < 30; i++) {
+            const dr = document.createElement('div');
+            dr.className = 'drop';
+            dr.style.left = Math.random() * 100 + 'vw';
+            dr.style.animationDelay = Math.random() * 2 + 's';
+            rain.appendChild(dr);
+        }
+
+        // คลิกสาดน้ำ
         function createSplash(e) {
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 10; i++) {
                 const p = document.createElement('div');
                 p.className = 'splash-particle';
-                const size = Math.random() * 20 + 10;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = e.clientX + 'px';
-                p.style.top = e.clientY + 'px';
-                
-                // กำหนดทิศทางการกระจาย
-                const tx = (Math.random() - 0.5) * 300 + 'px';
-                const ty = (Math.random() - 0.5) * 300 + 'px';
-                p.style.setProperty('--tx', tx);
-                p.style.setProperty('--ty', ty);
-                
+                p.style.left = e.clientX + 'px'; p.style.top = e.clientY + 'px';
+                p.style.width = p.style.height = Math.random() * 15 + 10 + 'px';
+                p.style.setProperty('--tx', (Math.random()-0.5)*300+'px');
+                p.style.setProperty('--ty', (Math.random()-0.5)*300+'px');
                 document.body.appendChild(p);
                 setTimeout(() => p.remove(), 800);
             }
         }
 
-        // YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
+        // YouTube Control
         var player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
@@ -272,8 +249,6 @@
         function startWebsite() {
             document.getElementById('overlay').classList.add('fade-out');
             if (player) { player.playVideo(); player.unMute(); }
-            // สาดน้ำตอนเริ่ม
-            createSplash({clientX: window.innerWidth/2, clientY: window.innerHeight/2});
         }
 
         function onPlayerStateChange(event) {
@@ -288,15 +263,15 @@
             }
         }
 
-        document.getElementById('master-play').addEventListener('click', function(e) {
-            e.stopPropagation(); // ไม่ให้ทับซ้อนกับคลิกสาดน้ำของ body
-            if (player.getPlayerState() == YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
+        document.getElementById('master-play').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (player.getPlayerState() == YT.PlayerState.PLAYING) player.pauseVideo();
+            else player.playVideo();
         });
 
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
