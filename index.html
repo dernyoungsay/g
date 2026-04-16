@@ -7,15 +7,18 @@
     
     <link rel="icon" type="image/png" href="https://img2.pic.in.th/asdzx.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&family=Kanit:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-glow: rgba(255, 255, 255, 0.15);
-            --accent-color: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* ปรับโทนสีเป็นสีฟ้าน้ำสงกรานต์ */
+            --primary-glow: rgba(0, 212, 255, 0.3);
+            --accent-color: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(0, 212, 255, 0.2);
+            --songkran-blue: #0093E9;
+            --songkran-cyan: #80D0C7;
         }
 
         * {
@@ -26,9 +29,9 @@
         }
 
         body {
-            background-color: #000;
+            background-color: #020b1a; /* พื้นหลังน้ำเงินเข้ม */
             color: #ffffff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Kanit', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -41,7 +44,7 @@
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
+            background: radial-gradient(circle, #020b1a 0%, #000 100%);
             z-index: 10000;
             display: flex;
             flex-direction: column;
@@ -59,22 +62,21 @@
         .enter-text-wrapper {
             text-align: center;
             font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
         }
 
-        .fingerprint-icon {
+        .water-drop-icon {
             font-size: 4rem;
-            color: #ffffff;
+            color: var(--accent-color);
             margin-bottom: 25px;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
-            animation: pulse-glow 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.5));
+            animation: ripple 2s infinite ease-in-out;
             cursor: pointer;
         }
 
-        @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)); }
-            100% { transform: scale(1); opacity: 0.6; }
+        @keyframes ripple {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-color)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--accent-color)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-color)); }
         }
 
         .main-enter-text {
@@ -88,7 +90,8 @@
         .sub-enter-text {
             font-size: 0.6rem;
             letter-spacing: 5px;
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--accent-color);
+            opacity: 0.7;
             font-weight: 300;
         }
 
@@ -97,18 +100,21 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
-            filter: brightness(0.3) saturate(1.2);
+            /* พื้นหลังรูปภาพที่เกี่ยวกับสงกรานต์หรือโทนน้ำ */
+            background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            filter: brightness(0.4) saturate(1.5) blur(2px);
             transform: scale(1.1);
             transition: transform 10s ease-out;
         }
         body.loaded .bg-wrapper { transform: scale(1); }
 
-        .vignette {
+        /* เอฟเฟกต์ละอองน้ำ (Overlay) */
+        .water-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
-            z-index: -1;
+            background: linear-gradient(180deg, rgba(0,147,233,0.1) 0%, rgba(128,208,199,0.1) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* --- Nav --- */
@@ -117,7 +123,7 @@
             top: 25px;
             width: 90%;
             max-width: 500px;
-            background: var(--glass-bg);
+            background: rgba(0, 212, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
@@ -142,10 +148,9 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 0.7rem;
             font-weight: 700;
-            letter-spacing: 1px;
         }
-        .nav-logo img { width: 18px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
-        .nav-text { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+        .nav-logo img { width: 18px; filter: drop-shadow(0 0 5px var(--accent-color)); }
+        .nav-text { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: var(--accent-color); letter-spacing: 2px; }
 
         /* --- Content --- */
         .container {
@@ -161,22 +166,23 @@
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-size: clamp(1.8rem, 7vw, 4rem);
             font-weight: 700;
-            letter-spacing: 15px;
+            letter-spacing: 10px;
             margin-bottom: 10px;
-            background: linear-gradient(180deg, #fff 0%, #777 100%);
+            /* Gradient สีน้ำฟ้า */
+            background: linear-gradient(180deg, #fff 0%, var(--accent-color) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
         }
 
         .subtext {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 5px;
-            color: rgba(255,255,255,0.4);
+            font-family: 'Kanit', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            color: var(--accent-color);
             margin-bottom: 50px;
             text-transform: uppercase;
         }
@@ -191,7 +197,7 @@
             max-width: 280px;
             height: 75px;
             text-decoration: none;
-            background: var(--glass-bg);
+            background: rgba(0, 212, 255, 0.1);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -200,13 +206,13 @@
             cursor: pointer;
         }
         .btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.4);
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--accent-color);
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
         }
-        .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; pointer-events: none; }
-        .btn-text-sub { font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 5px; pointer-events: none; }
+        .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; }
+        .btn-text-sub { font-family: 'Kanit', sans-serif; font-size: 0.6rem; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-top: 5px; }
 
         /* --- Music Player --- */
         .music-player {
@@ -215,9 +221,8 @@
             left: 50%;
             transform: translateX(-50%);
             width: 300px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(2, 11, 26, 0.8);
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 12px;
@@ -231,37 +236,34 @@
 
         .album-art {
             width: 50px; height: 50px; border-radius: 12px;
-            overflow: hidden; border: 1px solid rgba(255,255,255,0.1);
-            flex-shrink: 0;
+            overflow: hidden; border: 1px solid var(--glass-border);
         }
-        .playing .album-art { animation: pulseArt 2s infinite ease-in-out; }
-        @keyframes pulseArt { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .album-art img { width: 100%; height: 100%; object-fit: cover; }
+        .playing .album-art { animation: rotateArt 5s infinite linear; }
+        @keyframes rotateArt { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
+        .album-art img { width: 100%; height: 100%; object-fit: cover; }
         .player-controls-mini { flex-grow: 1; margin-left: 15px; overflow: hidden; }
         .music-title-mini {
-            font-size: 0.6rem; color: rgba(255,255,255,0.9);
+            font-size: 0.6rem; color: #fff;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin-bottom: 6px; font-family: 'Inter', sans-serif;
+            margin-bottom: 6px;
         }
         .ctrl-btns { display: flex; align-items: center; gap: 20px; }
-        .play-btn { background: none; border: none; color: #fff; font-size: 0.9rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
-        .play-btn:hover { opacity: 1; transform: scale(1.1); }
+        .play-btn { background: none; border: none; color: var(--accent-color); font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
 
         footer {
             margin-top: 40px;
             font-size: 0.55rem;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 3px;
+            color: rgba(0, 212, 255, 0.4);
+            letter-spacing: 2px;
             font-family: 'Orbitron', sans-serif;
         }
 
         #youtube-player { position: absolute; top: -1000px; left: -1000px; visibility: hidden; }
 
         @media (max-width: 480px) {
-            h1 { letter-spacing: 8px; }
+            h1 { letter-spacing: 5px; }
             .top-nav { width: 85%; }
-            .music-player { width: 280px; }
         }
     </style>
 </head>
@@ -269,36 +271,36 @@
 
     <div id="overlay" onclick="startWebsite()">
         <div class="enter-text-wrapper">
-            <i class="fa-solid fa-fingerprint fingerprint-icon"></i>
-            <div class="main-enter-text">CLICK TO ENTER</div>
-            <div class="sub-enter-text">SYSTEM DERNYOUNGSAY</div>
+            <i class="fa-solid fa-droplet water-drop-icon"></i>
+            <div class="main-enter-text">SONGKRAN 2026</div>
+            <div class="sub-enter-text">HAPPY WATER FESTIVAL</div>
         </div>
     </div>
 
     <div class="bg-wrapper"></div>
-    <div class="vignette"></div>
+    <div class="water-overlay"></div>
 
     <div class="top-nav">
         <a href="#" class="nav-logo">
             <img src="https://img2.pic.in.th/asdzx.png" alt="icon">
             DERNYOUNGSAY
         </a>
-        <div class="nav-text">V.2026.1</div>
+        <div class="nav-text">SONGKRAN V.2</div>
     </div>
 
     <div class="container">
-        <h1>DERNYOUNGSAY</h1> 
-        <div class="subtext">The Original Legacy Member</div>
+        <h1>SONGKRAN</h1> 
+        <div class="subtext">Sawatdee Pee Mai Thai - 2K26</div>
 
         <div class="button-group">
             <a href="https://dernyoungsay.github.io/gg/" class="btn">
                 <span class="btn-text-main">MEMBER ENTER</span>
-                <span class="btn-text-sub">MEMBER 2K26</span>
+                <span class="btn-text-sub">เข้าสู่ระบบสมาชิก 2026</span>
             </a>
         </div>
 
         <footer>
-            &copy; 2K26 SYSTEM BY DERNYOUNGSAY
+            &copy; 2026 SONGKRAN FESTIVAL BY DERNYOUNGSAY
         </footer>
     </div>
 
@@ -307,7 +309,7 @@
             <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
         </div>
         <div class="player-controls-mini">
-            <div class="music-title-mini" id="music-title">Initializing...</div>
+            <div class="music-title-mini" id="music-title">Songkran Vibes...</div>
             <div class="ctrl-btns">
                 <i class="fas fa-step-backward play-btn"></i>
                 <button class="play-btn" id="master-play">
@@ -321,7 +323,6 @@
     <div id="youtube-player"></div>
 
     <script>
-        // โหลด YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -350,7 +351,6 @@
             });
         }
 
-        // เริ่มเข้าสู่เว็บไซต์
         function startWebsite() {
             document.body.classList.add('loaded');
             const overlay = document.getElementById('overlay');
@@ -372,30 +372,24 @@
                 const videoData = player.getVideoData();
                 if (videoData && videoData.title) {
                     document.getElementById('music-title').innerText = videoData.title;
-                } else {
-                    document.getElementById('music-title').innerText = "System Audio Playing";
                 }
-            } catch(e) {
-                document.getElementById('music-title').innerText = "System Audio Active";
-            }
+            } catch(e) {}
         }
 
         function onPlayerStateChange(event) {
             const icon = document.getElementById('play-icon');
             const cont = document.getElementById('player-container');
             
-            // 1 = กำลังเล่น, 2 = หยุดชั่วคราว
             if (event.data == YT.PlayerState.PLAYING) {
                 icon.className = 'fas fa-pause';
                 cont.classList.add('playing');
-                updateTitle(); // อัปเดตชื่อเพลงอีกครั้งเผื่อโหลดช้า
+                updateTitle();
             } else {
                 icon.className = 'fas fa-play';
                 cont.classList.remove('playing');
             }
         }
 
-        // ควบคุมปุ่ม Play/Pause
         document.getElementById('master-play').addEventListener('click', function() {
             const state = player.getPlayerState();
             if (state == YT.PlayerState.PLAYING) {
@@ -405,7 +399,6 @@
             }
         });
 
-        // ป้องกันคลิกขวา
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
