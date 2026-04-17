@@ -7,23 +7,28 @@
     
     <link rel="icon" type="image/png" href="https://img2.pic.in.th/asdzx.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500&family=Kanit:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --accent-color: #00d4ff;
-            --glass-white: rgba(255, 255, 255, 0.05);
+            --primary-glow: rgba(255, 255, 255, 0.15);
+            --accent-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --player-bg: rgba(15, 15, 15, 0.7);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: default; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: default;
+        }
 
         body {
-            background-color: #050505;
+            background-color: #000;
             color: #ffffff;
-            font-family: 'Inter', 'Kanit', sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -32,103 +37,185 @@
             position: relative;
         }
 
-        /* --- Background Decoration --- */
-        .bg-glow {
-            position: absolute;
-            width: 50vw; height: 50vw;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
-            z-index: 0; filter: blur(60px);
-            pointer-events: none;
+        /* --- Overlay --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 1.2s cubic-bezier(0.7, 0, 0.3, 1), visibility 1.2s;
+        }
+        
+        #overlay.fade-out { 
+            opacity: 0; 
+            visibility: hidden;
         }
 
-        /* --- Top Greeting --- */
-        .top-greeting {
-            position: absolute;
-            top: 12%;
+        .enter-text-wrapper {
+            text-align: center;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 6px;
-            color: var(--accent-color);
             text-transform: uppercase;
-            opacity: 0.7;
-            animation: floating 4s infinite ease-in-out;
-            z-index: 5;
         }
 
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); opacity: 0.4; }
-            50% { transform: translateY(-10px); opacity: 0.9; }
+        .fingerprint-icon {
+            font-size: 4rem;
+            color: #ffffff;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+            animation: pulse-glow 2s infinite ease-in-out;
+            cursor: pointer;
         }
 
-        /* --- Brand UI (Smooth & Clean) --- */
-        .container { text-align: center; z-index: 10; position: relative; }
-
-        .brand-wrapper {
-            position: relative;
-            padding: 40px;
-            transition: transform 0.3s ease;
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)); }
+            100% { transform: scale(1); opacity: 0.6; }
         }
+
+        .main-enter-text {
+            font-size: 1.2rem;
+            letter-spacing: 12px; 
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .sub-enter-text {
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+        }
+
+        /* --- Background --- */
+        .bg-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: url('https://img2.pic.in.th/imageb9605c3af49b68cd.png') center/cover no-repeat;
+            filter: brightness(0.3) saturate(1.2);
+            transform: scale(1.1);
+            transition: transform 10s ease-out;
+        }
+        body.loaded .bg-wrapper { transform: scale(1); }
+
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+
+        /* --- Nav --- */
+        .top-nav {
+            position: fixed;
+            top: 25px;
+            width: 90%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 1s ease 0.5s;
+        }
+        body.loaded .top-nav { opacity: 1; transform: translateY(0); }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .nav-logo img { width: 18px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        .nav-text { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+
+        /* --- Content --- */
+        .container {
+            text-align: center;
+            z-index: 10;
+            width: 100%;
+            padding: 0 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease 0.8s;
+        }
+        body.loaded .container { opacity: 1; transform: translateY(0); }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 5.5rem);
-            letter-spacing: 18px;
-            color: #ffffff;
+            font-size: clamp(2rem, 8vw, 4.5rem);
             font-weight: 700;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 1;
-            margin: 0;
-            line-height: 1;
-        }
-
-        .text-droplets {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 2;
+            letter-spacing: 15px;
+            margin-bottom: 10px;
+            background: linear-gradient(180deg, #fff 0%, #777 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
         }
 
         .subtext {
             font-family: 'Orbitron', sans-serif;
             font-size: 0.65rem;
-            letter-spacing: 10px;
-            color: rgba(255,255,255,0.25);
-            margin-top: 25px;
-            margin-bottom: 45px;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 50px;
             text-transform: uppercase;
         }
 
-        /* --- Buttons --- */
         .btn {
+            position: relative;
             display: inline-flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            width: 260px; height: 65px;
-            background: var(--glass-white);
+            align-items: center;
+            width: 100%;
+            max-width: 280px;
+            height: 75px;
+            text-decoration: none;
+            background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: #fff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
         }
-
         .btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--accent-color);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.15);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
+        .btn-text-main { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 3px; font-weight: 700; color: #fff; pointer-events: none; }
+        .btn-text-sub { font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 5px; pointer-events: none; }
 
-        /* --- Music Player UI (Smooth Redesign) --- */
+        /* --- Music Player --- */
         .music-player {
             position: fixed;
-            bottom: 40px; right: 40px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 300px;
-            background: var(--player-bg);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
@@ -137,263 +224,189 @@
             display: flex;
             align-items: center;
             z-index: 1000;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            transition: all 0.5s ease;
+            opacity: 0;
+            transition: all 1s ease 1s;
         }
+        body.loaded .music-player { opacity: 1; }
 
         .album-art {
-            width: 55px; height: 55px;
-            border-radius: 14px;
-            overflow: hidden;
+            width: 50px; height: 50px; border-radius: 12px;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
+        }
+        .playing .album-art { animation: pulseArt 2s infinite ease-in-out; }
+        @keyframes pulseArt { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .album-art img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .player-controls-mini { flex-grow: 1; margin-left: 15px; overflow: hidden; }
+        .music-title-mini {
+            font-size: 0.6rem; color: rgba(255,255,255,0.9);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 6px; font-family: 'Inter', sans-serif;
+        }
+        .ctrl-btns { display: flex; align-items: center; gap: 20px; }
+        .play-btn { background: none; border: none; color: #fff; font-size: 0.9rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
+        .play-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.55rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 3px;
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .album-art img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .playing .album-art img { animation: pulseArt 2s infinite ease-in-out; }
+        #youtube-player { position: absolute; top: -1000px; left: -1000px; visibility: hidden; }
 
-        @keyframes pulseArt {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .music-info {
-            flex-grow: 1;
-            margin-left: 15px;
-            overflow: hidden;
-        }
-
-        .song-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-
-        .artist-name {
-            font-size: 0.65rem;
-            color: rgba(255,255,255,0.5);
-            letter-spacing: 1px;
-        }
-
-        .play-btn {
-            background: var(--accent-color);
-            border: none;
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            color: #000;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 10px;
-            transition: 0.3s;
-        }
-
-        .play-btn:hover { transform: scale(1.1); filter: brightness(1.1); }
-
-        /* --- Overlay --- */
-        #overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #overlay.fade-out { opacity: 0; visibility: hidden; }
-
-        /* --- Atmosphere --- */
-        .wet-screen { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0.4; }
-        .droplet {
-            position: absolute; background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%; filter: blur(0.5px);
-            box-shadow: inset -1px -1px 2px rgba(0,0,0,0.1), 1px 1px 2px rgba(255,255,255,0.05);
-        }
-        .rain { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
-        .drop {
-            position: absolute; background: linear-gradient(transparent, rgba(255,255,255,0.15));
-            width: 1px; height: 60px; top: -100px;
-            animation: fall 1.2s linear infinite;
-        }
-        @keyframes fall { to { transform: translateY(110vh); } }
-
-        #youtube-player { position: absolute; visibility: hidden; }
-
-        .splash-particle {
-            position: absolute; pointer-events: none;
-            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 80%);
-            border-radius: 50%; z-index: 9999; animation: splash 0.7s ease-out forwards;
-        }
-        @keyframes splash {
-            0% { transform: scale(0); opacity: 0.8; }
-            100% { transform: scale(2) translate(var(--tx), var(--ty)); opacity: 0; }
+        @media (max-width: 480px) {
+            h1 { letter-spacing: 8px; }
+            .top-nav { width: 85%; }
+            .music-player { width: 280px; }
         }
     </style>
 </head>
-<body onclick="createSplash(event)">
-
-    <div class="bg-glow"></div>
-    <div class="wet-screen" id="wet-screen"></div>
+<body>
 
     <div id="overlay" onclick="startWebsite()">
-        <div style="position: relative;">
-            <i class="fa-solid fa-droplet" style="font-size: 3.5rem; color: var(--accent-color); filter: drop-shadow(0 0 15px var(--accent-color));"></i>
+        <div class="enter-text-wrapper">
+            <i class="fa-solid fa-fingerprint fingerprint-icon"></i>
+            <div class="main-enter-text">CLICK TO ENTER</div>
+            <div class="sub-enter-text">SYSTEM DERNYOUNGSAY</div>
         </div>
-        <div style="font-family: 'Orbitron'; letter-spacing: 8px; color: #fff; margin-top: 30px; font-size: 0.7rem; opacity: 0.6;">ENTER THE EXPERIENCE</div>
     </div>
 
-    <div class="rain" id="rain"></div>
+    <div class="bg-wrapper"></div>
+    <div class="vignette"></div>
 
-    <div class="top-greeting">HAPPY SONGKRAN DAY</div>
+    <div class="top-nav">
+        <a href="#" class="nav-logo">
+            <img src="https://img2.pic.in.th/asdzx.png" alt="icon">
+            DERNYOUNGSAY
+        </a>
+        <div class="nav-text">V.2026.1</div>
+    </div>
 
     <div class="container">
-        <div class="brand-wrapper">
-            <h1>DERNYOUNGSAY</h1>
-            <div class="text-droplets" id="text-droplets"></div>
-        </div>
-        
+        <h1>DERNYOUNGSAY</h1> 
         <div class="subtext">The Original Legacy Member</div>
-        
-        <a href="https://dernyoungsay.github.io/gg/" class="btn">
-            <span style="font-weight: 600; letter-spacing: 3px; font-size: 0.85rem;">MEMBER ENTER</span>
-            <span style="font-size: 0.5rem; opacity: 0.4; margin-top: 6px; letter-spacing: 1px;">Songkran 2026 Special Edition</span>
-        </a>
+
+        <div class="button-group">
+            <a href="https://dernyoungsay.github.io/gg/" class="btn">
+                <span class="btn-text-main">MEMBER ENTER</span>
+                <span class="btn-text-sub">MEMBER 2K26</span>
+            </a>
+        </div>
+
+        <footer>
+            &copy; 2K26 SYSTEM BY DERNYOUNGSAY
+        </footer>
     </div>
 
     <div class="music-player" id="player-container">
         <div class="album-art">
-            <img src="https://i.ytimg.com/vi/O90WsctfY4Y/maxresdefault.jpg" id="music-cover">
+            <img src="https://img.youtube.com/vi/Ovo1y7Pllt8/maxresdefault.jpg" alt="Cover" id="music-cover">
         </div>
-        <div class="music-info">
-            <div class="song-name">Sunset in Pattaya</div>
-            <div class="artist-name">YOUNGOHM</div>
+        <div class="player-controls-mini">
+            <div class="music-title-mini" id="music-title">Initializing...</div>
+            <div class="ctrl-btns">
+                <i class="fas fa-step-backward play-btn"></i>
+                <button class="play-btn" id="master-play">
+                    <i class="fas fa-play" id="play-icon"></i>
+                </button>
+                <i class="fas fa-step-forward play-btn"></i>
+            </div>
         </div>
-        <button class="play-btn" id="master-play">
-            <i class="fas fa-play" id="play-icon" style="margin-left: 2px;"></i>
-        </button>
     </div>
 
     <div id="youtube-player"></div>
 
     <script>
-        // Smooth Droplets on Screen
-        const wetScreen = document.getElementById('wet-screen');
-        for(let i=0; i<35; i++) {
-            const d = document.createElement('div');
-            const size = Math.random() * 10 + 4;
-            d.className = 'droplet';
-            d.style.width = size + 'px';
-            d.style.height = (size + Math.random() * 12) + 'px';
-            d.style.left = Math.random() * 100 + 'vw';
-            d.style.top = Math.random() * 100 + 'vh';
-            d.style.opacity = Math.random() * 0.5 + 0.2;
-            wetScreen.appendChild(d);
-        }
+        // โหลด YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Text Water Flow Effect
-        const textDroplets = document.getElementById('text-droplets');
-        function createTextFlow() {
-            const d = document.createElement('div');
-            const size = Math.random() * 5 + 2;
-            d.className = 'droplet';
-            d.style.width = size + 'px';
-            d.style.height = (size + 8) + 'px';
-            d.style.left = (Math.random() * 90 + 5) + '%';
-            d.style.top = '-10%';
-            d.style.background = 'rgba(255,255,255,0.3)';
-            d.style.transition = `top ${Math.random() * 1.5 + 2.5}s cubic-bezier(0.4, 0, 0.6, 1)`;
-            textDroplets.appendChild(d);
-            
-            setTimeout(() => { d.style.top = '110%'; }, 50);
-            setTimeout(() => d.remove(), 4000);
-        }
-        setInterval(createTextFlow, 400);
-
-        // Ambient Rain
-        const rain = document.getElementById('rain');
-        for (let i = 0; i < 20; i++) {
-            const dr = document.createElement('div');
-            dr.className = 'drop';
-            dr.style.left = Math.random() * 100 + 'vw';
-            dr.style.animationDelay = Math.random() * 2 + 's';
-            dr.style.animationDuration = (Math.random() * 0.5 + 1) + 's';
-            rain.appendChild(dr);
-        }
-
-        // Water Splash on Click
-        function createSplash(e) {
-            for (let i = 0; i < 10; i++) {
-                const p = document.createElement('div');
-                p.className = 'splash-particle';
-                p.style.left = e.clientX + 'px';
-                p.style.top = e.clientY + 'px';
-                const size = Math.random() * 10 + 5;
-                p.style.width = p.style.height = size + 'px';
-                p.style.setProperty('--tx', (Math.random()-0.5)*200+'px');
-                p.style.setProperty('--ty', (Math.random()-0.5)*200+'px');
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 700);
-            }
-        }
-
-        // YouTube API Integration
         var player;
-        const videoID = 'O90WsctfY4Y'; // Sunset in Pattaya
+        var videoId = 'Ovo1y7Pllt8'; 
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
-                height: '0', width: '0', videoId: videoID,
+                height: '0', width: '0',
+                videoId: videoId,
                 playerVars: { 
                     'autoplay': 0, 
                     'loop': 1, 
-                    'playlist': videoID,
+                    'playlist': videoId,
                     'controls': 0,
                     'showinfo': 0,
-                    'rel': 0
+                    'modestbranding': 1,
+                    'iv_load_policy': 3
                 },
-                events: { 'onStateChange': onPlayerStateChange }
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
             });
         }
 
+        // เริ่มเข้าสู่เว็บไซต์
         function startWebsite() {
-            document.getElementById('overlay').classList.add('fade-out');
-            if (player) { 
-                player.playVideo(); 
+            document.body.classList.add('loaded');
+            const overlay = document.getElementById('overlay');
+            overlay.classList.add('fade-out');
+            
+            if (player && typeof player.playVideo === 'function') {
                 player.unMute();
                 player.setVolume(80);
+                player.playVideo();
+            }
+        }
+
+        function onPlayerReady(event) {
+            updateTitle();
+        }
+
+        function updateTitle() {
+            try {
+                const videoData = player.getVideoData();
+                if (videoData && videoData.title) {
+                    document.getElementById('music-title').innerText = videoData.title;
+                } else {
+                    document.getElementById('music-title').innerText = "System Audio Playing";
+                }
+            } catch(e) {
+                document.getElementById('music-title').innerText = "System Audio Active";
             }
         }
 
         function onPlayerStateChange(event) {
             const icon = document.getElementById('play-icon');
-            const container = document.getElementById('player-container');
+            const cont = document.getElementById('player-container');
+            
+            // 1 = กำลังเล่น, 2 = หยุดชั่วคราว
             if (event.data == YT.PlayerState.PLAYING) {
                 icon.className = 'fas fa-pause';
-                icon.style.marginLeft = '0';
-                container.classList.add('playing');
+                cont.classList.add('playing');
+                updateTitle(); // อัปเดตชื่อเพลงอีกครั้งเผื่อโหลดช้า
             } else {
                 icon.className = 'fas fa-play';
-                icon.style.marginLeft = '2px';
-                container.classList.remove('playing');
+                cont.classList.remove('playing');
             }
         }
 
-        document.getElementById('master-play').addEventListener('click', (e) => {
-            e.stopPropagation();
+        // ควบคุมปุ่ม Play/Pause
+        document.getElementById('master-play').addEventListener('click', function() {
             const state = player.getPlayerState();
-            if (state == YT.PlayerState.PLAYING) player.pauseVideo();
-            else player.playVideo();
+            if (state == YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
         });
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-        
-        // Prevent right click for clean look
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        // ป้องกันคลิกขวา
+        document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
 </html>
